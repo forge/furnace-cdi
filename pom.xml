@@ -67,7 +67,7 @@
          <!-- Weld -->
          <dependency>
             <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-core</artifactId>
+            <artifactId>weld-core-impl</artifactId>
             <version>${version.weld}</version>
          </dependency>
          <dependency>
