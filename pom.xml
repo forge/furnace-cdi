@@ -15,6 +15,21 @@
    <packaging>pom</packaging>
    <name>Furnace - CDI Container Parent</name>
 
+   <licenses>
+      <license>
+         <name>Eclipse Public License version 1.0</name>
+         <url>http://www.eclipse.org/legal/epl-v10.html</url>
+      </license>
+   </licenses>
+
+   <developers>
+      <developer>
+         <id>lincoln</id>
+         <name>Lincoln Baxter, III</name>
+         <email>lincolnbaxter@gmail.com</email>
+      </developer>
+   </developers>
+
    <modules>
       <module>api</module>
       <module>impl</module>
@@ -22,8 +37,10 @@
       <module>tests</module>
    </modules>
 
-
    <properties>
+      <forge.scm.connection>scm:git:git://github.com/forge/furnace-cdi.git</forge.scm.connection>
+      <forge.developer.connection>scm:git:git@github.com:forge/furnace-cdi.git</forge.developer.connection>
+      <forge.scm.url>http://github.com/forge/furnace-cdi</forge.scm.url>
       <version.cdi>1.1</version.cdi>
       <version.jboss.spec>3.0.2.Final</version.jboss.spec>
       <version.slf4j>1.6.1</version.slf4j>
@@ -385,4 +402,11 @@
          </plugin>
       </plugins>
    </reporting>
+
+   <scm>
+      <connection>${forge.scm.connection}</connection>
+      <developerConnection>${forge.developer.connection}</developerConnection>
+      <url>${forge.scm.url}</url>
+      <tag>HEAD</tag>
+   </scm>
 </project>
