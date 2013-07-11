@@ -52,13 +52,6 @@
 
          <!-- CDI dependencies -->
          <dependency>
-            <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-6.0</artifactId>
-            <version>${version.jboss.spec}</version>
-            <type>pom</type>
-            <scope>import</scope>
-         </dependency>
-         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <version>${version.cdi}</version>

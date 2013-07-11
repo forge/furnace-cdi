@@ -102,10 +102,11 @@ public class SilentTCCLSingletonProvider extends SingletonProvider
 
    private static ClassLoader getClassLoader()
    {
+      ClassLoader result;
       SecurityManager sm = System.getSecurityManager();
       if (sm != null)
       {
-         return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+         result = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
          {
             @Override
             public ClassLoader run()
@@ -116,7 +117,8 @@ public class SilentTCCLSingletonProvider extends SingletonProvider
       }
       else
       {
-         return Thread.currentThread().getContextClassLoader();
+         result = Thread.currentThread().getContextClassLoader();
       }
+      return result;
    }
 }

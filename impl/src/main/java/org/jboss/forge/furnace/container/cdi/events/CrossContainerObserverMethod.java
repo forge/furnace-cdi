@@ -19,6 +19,7 @@ import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.exception.ContainerException;
 import org.jboss.forge.furnace.services.Exported;
+import org.jboss.forge.furnace.services.ExportedInstance;
 import org.jboss.forge.furnace.services.ServiceRegistry;
 import org.jboss.forge.furnace.util.AddonFilters;
 import org.jboss.forge.furnace.util.Annotations;
@@ -49,8 +50,16 @@ public class CrossContainerObserverMethod
                            || ClassLoader.getSystemClassLoader().equals(eventClassLoader)))
                   {
                      ServiceRegistry addonServiceRegistry = addon.getServiceRegistry();
-                     BeanManager manager = addonServiceRegistry.getExportedInstance(BeanManager.class).get();
-                     manager.fireEvent(event, qualifiers.toArray(new Annotation[] {}));
+                     if (addonServiceRegistry != null)
+                     {
+                        ExportedInstance<BeanManager> exportedInstance = addonServiceRegistry
+                                 .getExportedInstance(BeanManager.class);
+                        if (exportedInstance != null)
+                        {
+                           BeanManager manager = exportedInstance.get();
+                           manager.fireEvent(event, qualifiers.toArray(new Annotation[] {}));
+                        }
+                     }
                   }
                }
             }
