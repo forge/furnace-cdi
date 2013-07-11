@@ -13,6 +13,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.InjectionPoint;
 
+import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.container.cdi.impl.ServiceRegistryImpl;
 import org.jboss.forge.furnace.exception.ContainerException;
 import org.jboss.forge.furnace.services.ExportedInstance;
@@ -23,7 +24,7 @@ import org.jboss.forge.proxy.Proxies;
 public class ExportedInstanceImpl<R> implements ExportedInstance<R>
 {
 
-   private ClassLoader loader;
+   private Addon addon;
    private BeanManager manager;
    private CreationalContext<R> context;
 
@@ -31,10 +32,10 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
    private Class<R> requestedType;
    private Class<? extends R> actualType;
 
-   public ExportedInstanceImpl(ClassLoader loader, BeanManager manager, Bean<R> requestedBean, Class<R> requestedType,
+   public ExportedInstanceImpl(Addon addon, BeanManager manager, Bean<R> requestedBean, Class<R> requestedType,
             Class<? extends R> actualType)
    {
-      this.loader = loader;
+      this.addon = addon;
       this.manager = manager;
       this.requestedBean = requestedBean;
       this.requestedType = requestedType;
@@ -52,18 +53,18 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
          {
             context = manager.createCreationalContext(requestedBean);
             Object delegate = manager.getReference(requestedBean, actualType, context);
-            return Proxies.enhance(loader, delegate, new ClassLoaderInterceptor(loader, delegate));
+            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(), delegate));
          }
       };
 
       try
       {
-         return (R) ClassLoaders.executeIn(loader, task);
+         return (R) ClassLoaders.executeIn(addon.getClassLoader(), task);
       }
       catch (Exception e)
       {
          throw new ContainerException("Failed to enhance instance of [" + actualType + "] with proxy for ClassLoader ["
-                  + loader + "]", e);
+                  + addon.getClassLoader() + "]", e);
       }
    }
 
@@ -81,18 +82,18 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
                      ServiceRegistryImpl.getQualifiersFrom(actualType)));
             context = manager.createCreationalContext(bean);
             Object delegate = manager.getInjectableReference(injectionPoint, context);
-            return Proxies.enhance(loader, delegate, new ClassLoaderInterceptor(loader, delegate));
+            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(), delegate));
          }
       };
 
       try
       {
-         return ClassLoaders.executeIn(loader, task);
+         return ClassLoaders.executeIn(addon.getClassLoader(), task);
       }
       catch (Exception e)
       {
          throw new ContainerException("Failed to enhance instance of [" + actualType + "] with proxy for ClassLoader ["
-                  + loader + "]");
+                  + addon.getClassLoader() + "]");
       }
    }
 
@@ -111,8 +112,8 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
          builder.append("requestedType=").append(requestedType).append(", ");
       if (actualType != null)
          builder.append("actualType=").append(actualType).append(", ");
-      if (loader != null)
-         builder.append("loader=").append(loader);
+      if (addon.getClassLoader() != null)
+         builder.append("addon.getClassLoader()=").append(addon.getClassLoader());
       builder.append("]");
       return builder.toString();
    }

@@ -20,14 +20,12 @@ public class AddonResourceLoader implements ResourceLoader
 {
    private final Map<String, Class<?>> classes;
 
-   private ClassLoader classLoader;
    private Addon addon;
 
    public AddonResourceLoader(Addon addon)
    {
       this.classes = new ConcurrentHashMap<String, Class<?>>();
       this.addon = addon;
-      this.classLoader = addon.getClassLoader();
    }
 
    @Override
@@ -45,7 +43,7 @@ public class AddonResourceLoader implements ResourceLoader
          {
             return classes.get(name);
          }
-         final Class<?> clazz = classLoader.loadClass(name);
+         final Class<?> clazz = addon.getClassLoader().loadClass(name);
          classes.put(name, clazz);
          return clazz;
       }
@@ -73,7 +71,7 @@ public class AddonResourceLoader implements ResourceLoader
    {
       try
       {
-         return classLoader.getResource(name);
+         return addon.getClassLoader().getResource(name);
       }
       catch (Exception e)
       {
@@ -87,7 +85,7 @@ public class AddonResourceLoader implements ResourceLoader
       try
       {
          final HashSet<URL> resources = new HashSet<URL>();
-         Enumeration<URL> urls = classLoader.getResources(name);
+         Enumeration<URL> urls = addon.getClassLoader().getResources(name);
          while (urls.hasMoreElements())
          {
             resources.add(urls.nextElement());

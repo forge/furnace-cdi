@@ -121,7 +121,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
             if (!beans.isEmpty())
             {
                result = new ExportedInstanceImpl<T>(
-                        addon.getClassLoader(),
+                        addon,
                         manager, (Bean<T>)
                         manager.resolve(beans),
                         requestedLoadedType,
@@ -208,10 +208,8 @@ public class ServiceRegistryImpl implements ServiceRegistry
          {
             Set<Bean<?>> beans = manager.getBeans(type, getQualifiersFrom(type));
             Class<? extends T> assignableClass = (Class<? extends T>) type;
-            result.add(new ExportedInstanceImpl<T>(
-                     addon.getClassLoader(),
-                     manager,
-                     (Bean<T>) manager.resolve(beans),
+            result.add(new ExportedInstanceImpl<T>(addon,
+                     manager, (Bean<T>) manager.resolve(beans),
                      requestedLoadedType,
                      assignableClass
                      ));
