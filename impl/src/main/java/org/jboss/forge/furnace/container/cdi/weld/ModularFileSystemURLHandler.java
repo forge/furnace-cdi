@@ -7,13 +7,13 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.jboss.weld.resources.spi.ResourceLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class provides file-system orientated scanning
@@ -23,8 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ModularFileSystemURLHandler
 {
-
-   private static final Logger log = LoggerFactory.getLogger(ModularFileSystemURLHandler.class);
+   private static final Logger log = Logger.getLogger(ModularFileSystemURLHandler.class.getName());
 
    @SuppressWarnings("unused")
    private ResourceLoader resourceLoader;
@@ -40,7 +39,7 @@ public class ModularFileSystemURLHandler
       {
          try
          {
-            ModularFileSystemURLHandler.log.trace("scanning: " + urlPath);
+            log.log(Level.FINEST, "Path: " + urlPath);
 
             if (urlPath.startsWith("file:"))
             {
@@ -63,7 +62,7 @@ public class ModularFileSystemURLHandler
          }
          catch (IOException ioe)
          {
-            ModularFileSystemURLHandler.log.warn("could not read entries", ioe);
+            log.log(Level.FINE, "Could not read entries", ioe);
          }
       }
    }
@@ -73,7 +72,7 @@ public class ModularFileSystemURLHandler
    {
       try
       {
-         log.trace("archive: " + file);
+         log.log(Level.FINEST, "Archive: " + file);
 
          String archiveUrl = "jar:" + file.toURI().toURL().toExternalForm() + "!/";
          ZipFile zip = new ZipFile(file);
@@ -106,13 +105,13 @@ public class ModularFileSystemURLHandler
       {
          if (file.equals(excludedDirectory))
          {
-            log.trace("skipping excluded directory: " + file);
+            log.log(Level.FINEST, "Skipping excluded directory: " + file);
 
             return;
          }
       }
 
-      log.trace("handling directory: " + file);
+      log.log(Level.FINEST, "Handling directory: " + file);
 
       for (File child : file.listFiles())
       {
@@ -130,7 +129,7 @@ public class ModularFileSystemURLHandler
             }
             catch (MalformedURLException e)
             {
-               log.error("Error loading file " + newPath);
+               log.log(Level.SEVERE, "Error loading file: " + newPath, e);
             }
          }
       }
