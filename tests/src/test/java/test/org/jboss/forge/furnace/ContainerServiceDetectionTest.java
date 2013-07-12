@@ -2,7 +2,6 @@ package test.org.jboss.forge.furnace;
 
 import java.util.Set;
 
-import javax.enterprise.inject.AmbiguousResolutionException;
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
