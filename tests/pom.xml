@@ -33,7 +33,7 @@
          <scope>provided</scope>
       </dependency>
 
-      <!-- Addons to compliment tests -->
+      <!-- Furnace Container -->
       <dependency>
          <groupId>org.jboss.forge.furnace</groupId>
          <artifactId>container-cdi</artifactId>
