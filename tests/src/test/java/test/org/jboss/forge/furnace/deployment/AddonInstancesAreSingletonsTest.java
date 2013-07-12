@@ -64,7 +64,7 @@ public class AddonInstancesAreSingletonsTest
    public void testInstallingAddonWithSingleOptionalAddonDependency() throws InterruptedException, TimeoutException
    {
       int addonCount = registry.getAddons().size();
-      final AddonId exampleId = AddonId.fromCoordinates("org.jboss.forge.addon:environment,2.0.0-SNAPSHOT");
+      final AddonId exampleId = AddonId.fromCoordinates("org.jboss.forge.addon:example,2.0.0-SNAPSHOT");
 
       /*
        * Ensure that the Addon instance we receive is requested before configuration is rescanned.

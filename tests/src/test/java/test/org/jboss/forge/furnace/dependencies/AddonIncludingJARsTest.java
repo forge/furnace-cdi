@@ -42,9 +42,9 @@ public class AddonIncludingJARsTest
    private Addon self;
 
    @Test
-   public void testContainerInjectionFailsForConflictingCDIDependency()
+   public void testContainerInjectionSucceedsForConflictingCDIDependency()
    {
-      Assert.assertNull(self);
+      Assert.assertNotNull(self);
    }
 
 }
