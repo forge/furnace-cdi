@@ -10,6 +10,7 @@ import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.lifecycle.AddonLifecycleProvider;
+import org.jboss.forge.furnace.lifecycle.ControlType;
 import org.jboss.forge.furnace.services.ServiceRegistry;
 
 /**
@@ -50,6 +51,12 @@ public class NullAddonLifecycleProvider implements AddonLifecycleProvider
    @Override
    public void preShutdown(Addon addon) throws Exception
    {
+   }
+
+   @Override
+   public ControlType getControlType()
+   {
+      return ControlType.ALL;
    }
 
 }

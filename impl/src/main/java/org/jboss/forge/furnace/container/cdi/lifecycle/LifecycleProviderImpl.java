@@ -20,6 +20,7 @@ import org.jboss.forge.furnace.container.cdi.weld.ModuleScanResult;
 import org.jboss.forge.furnace.event.PostStartup;
 import org.jboss.forge.furnace.event.PreShutdown;
 import org.jboss.forge.furnace.lifecycle.AddonLifecycleProvider;
+import org.jboss.forge.furnace.lifecycle.ControlType;
 import org.jboss.forge.furnace.services.ServiceRegistry;
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -107,6 +108,12 @@ public class LifecycleProviderImpl implements AddonLifecycleProvider
    public ServiceRegistry getServiceRegistry(Addon addon)
    {
       return serviceRegistry;
+   }
+
+   @Override
+   public ControlType getControlType()
+   {
+      return ControlType.DEPENDENTS;
    }
 
 }
