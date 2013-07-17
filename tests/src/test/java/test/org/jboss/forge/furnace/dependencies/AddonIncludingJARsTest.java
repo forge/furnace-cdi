@@ -9,7 +9,6 @@ import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
-import org.jboss.forge.test.Tests;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
 import org.junit.Test;
@@ -29,7 +28,7 @@ public class AddonIncludingJARsTest
    {
       ForgeArchive archive = ShrinkWrap
                .create(ForgeArchive.class)
-               .addAsLibraries(Tests.resolveDependencies("javax.enterprise:cdi-api:1.0"))
+               .addAsLibrary("cdi-api-1.0.jar", "cdi-api.jar")
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT")
                )
