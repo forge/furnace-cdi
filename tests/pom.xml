@@ -9,6 +9,14 @@
    <artifactId>container-cdi-tests</artifactId>
    <name>Furnace - CDI Container Tests</name>
    <dependencies>
+
+      <dependency>
+         <groupId>org.jboss.forge.addon</groupId>
+         <artifactId>addon-manager</artifactId>
+         <classifier>forge-addon</classifier>
+         <version>2.0.0-SNAPSHOT</version>
+      </dependency>
+
       <dependency>
          <groupId>org.jboss.forge.test</groupId>
          <artifactId>forge-test-harness</artifactId>
@@ -24,8 +32,8 @@
       <dependency>
          <groupId>org.jboss.forge.furnace</groupId>
          <artifactId>furnace-se</artifactId>
-         <scope>test</scope>
          <version>2.0.0-SNAPSHOT</version>
+         <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.jboss.forge.furnace</groupId>
@@ -38,7 +46,6 @@
          <groupId>org.jboss.forge.furnace</groupId>
          <artifactId>container-cdi</artifactId>
          <classifier>forge-addon</classifier>
-         <version>2.0.0-SNAPSHOT</version>
       </dependency>
    </dependencies>
 </project>

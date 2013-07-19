@@ -58,6 +58,12 @@
          </dependency>
          <dependency>
             <groupId>org.jboss.forge.furnace</groupId>
+            <artifactId>container-cdi</artifactId>
+            <classifier>forge-addon</classifier>
+            <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.forge.furnace</groupId>
             <artifactId>container-cdi-api</artifactId>
             <version>${project.version}</version>
          </dependency>
