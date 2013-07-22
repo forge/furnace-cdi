@@ -48,6 +48,7 @@ public class AddonInstancesAreSingletonsTest
                .addBeansXML()
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
+                        AddonDependencyEntry.create("org.jboss.forge.addon:maven", "2.0.0-SNAPSHOT"),
                         AddonDependencyEntry.create("org.jboss.forge.addon:addon-manager", "2.0.0-SNAPSHOT")
                );
 
@@ -64,7 +65,7 @@ public class AddonInstancesAreSingletonsTest
    public void testInstallingAddonWithSingleOptionalAddonDependency() throws InterruptedException, TimeoutException
    {
       int addonCount = registry.getAddons().size();
-      final AddonId exampleId = AddonId.fromCoordinates("org.jboss.forge.addon:example,2.0.0-SNAPSHOT");
+      final AddonId exampleId = AddonId.fromCoordinates("org.jboss.forge.addon:ui-spi,2.0.0-SNAPSHOT");
 
       /*
        * Ensure that the Addon instance we receive is requested before configuration is rescanned.
