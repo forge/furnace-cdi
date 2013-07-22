@@ -102,7 +102,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
             }
             catch (ClassNotFoundException cnfe)
             {
-               log.fine("Class " + requestedType.getName() + " is not present in this addon ClassLoader");
+               log.fine("Class " + requestedType.getName() + " is not present in this addon [" + addon + "]");
                return null;
             }
 
@@ -112,7 +112,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
             }
             catch (ClassNotFoundException cnfe)
             {
-               log.fine("Class " + actualType.getName() + " is not present in this addon ClassLoader");
+               log.fine("Class " + actualType.getName() + " is not present in this addon [" + addon + "]");
                return null;
             }
 
@@ -199,6 +199,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
       }
       catch (ClassNotFoundException e)
       {
+         log.fine("Class " + requestedType.getName() + " is not present in this addon [" + addon + "]");
          return result;
       }
 
