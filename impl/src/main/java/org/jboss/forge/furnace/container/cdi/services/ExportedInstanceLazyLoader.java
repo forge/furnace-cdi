@@ -6,12 +6,12 @@ import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.proxy.ForgeProxy;
+import org.jboss.forge.furnace.proxy.Proxies;
 import org.jboss.forge.furnace.services.ExportedInstance;
 import org.jboss.forge.furnace.services.ServiceRegistry;
 import org.jboss.forge.furnace.util.AddonFilters;
 import org.jboss.forge.furnace.util.ClassLoaders;
-import org.jboss.forge.proxy.ForgeProxy;
-import org.jboss.forge.proxy.Proxies;
 
 public class ExportedInstanceLazyLoader implements ForgeProxy
 {

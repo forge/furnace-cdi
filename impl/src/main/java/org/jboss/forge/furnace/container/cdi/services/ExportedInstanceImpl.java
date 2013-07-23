@@ -16,10 +16,10 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.container.cdi.impl.ServiceRegistryImpl;
 import org.jboss.forge.furnace.exception.ContainerException;
+import org.jboss.forge.furnace.proxy.ClassLoaderInterceptor;
+import org.jboss.forge.furnace.proxy.Proxies;
 import org.jboss.forge.furnace.services.ExportedInstance;
 import org.jboss.forge.furnace.util.ClassLoaders;
-import org.jboss.forge.proxy.ClassLoaderInterceptor;
-import org.jboss.forge.proxy.Proxies;
 
 public class ExportedInstanceImpl<R> implements ExportedInstance<R>
 {
@@ -94,8 +94,7 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
       }
       catch (Exception e)
       {
-         throw new ContainerException("Failed to enhance instance of [" + actualType + "] with proxy for ClassLoader ["
-                  + addon.getClassLoader() + "]", e);
+         throw new ContainerException("Failed to get instance of [" + actualType + "] from addon [" + addon + "]", e);
       }
    }
 

@@ -10,9 +10,9 @@ import java.io.File;
 import java.io.IOException;
 
 import org.jboss.forge.furnace.Furnace;
+import org.jboss.forge.furnace.impl.util.Files;
 import org.jboss.forge.furnace.repositories.AddonRepositoryMode;
 import org.jboss.forge.furnace.se.FurnaceFactory;
-import org.jboss.forge.furnace.util.Files;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
