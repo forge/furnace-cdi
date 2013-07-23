@@ -53,7 +53,8 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
          {
             context = manager.createCreationalContext(requestedBean);
             Object delegate = manager.getReference(requestedBean, actualType, context);
-            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(), delegate));
+            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(),
+                     delegate));
          }
       };
 
@@ -82,7 +83,8 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
                      ServiceRegistryImpl.getQualifiersFrom(actualType)));
             context = manager.createCreationalContext(bean);
             Object delegate = manager.getInjectableReference(injectionPoint, context);
-            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(), delegate));
+            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(),
+                     delegate));
          }
       };
 
@@ -93,7 +95,7 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
       catch (Exception e)
       {
          throw new ContainerException("Failed to enhance instance of [" + actualType + "] with proxy for ClassLoader ["
-                  + addon.getClassLoader() + "]");
+                  + addon.getClassLoader() + "]", e);
       }
    }
 
