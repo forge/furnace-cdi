@@ -7,6 +7,7 @@
 
 package test.org.jboss.forge.furnace.deployment;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -20,8 +21,9 @@ import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.addons.AddonRegistry;
-import org.jboss.forge.furnace.manager.AddonManager;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
+import org.jboss.forge.furnace.repositories.AddonRepository;
+import org.jboss.forge.furnace.repositories.MutableAddonRepository;
 import org.jboss.forge.furnace.util.Addons;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
@@ -38,8 +40,7 @@ public class AddonInstancesAreSingletonsTest
 {
    @Deployment
    @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.addon:addon-manager", version = "2.0.0-SNAPSHOT"),
-            @AddonDependency(name = "org.jboss.forge.addon:maven", version = "2.0.0-SNAPSHOT")
+            @AddonDependency(name = "org.jboss.forge.furnace:container-cdi", version = "2.0.0-SNAPSHOT")
    })
    public static ForgeArchive getDeployment()
    {
@@ -47,9 +48,7 @@ public class AddonInstancesAreSingletonsTest
                .create(ForgeArchive.class)
                .addBeansXML()
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:maven", "2.0.0-SNAPSHOT"),
-                        AddonDependencyEntry.create("org.jboss.forge.addon:addon-manager", "2.0.0-SNAPSHOT")
+                        AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT")
                );
 
       return archive;
@@ -59,19 +58,21 @@ public class AddonInstancesAreSingletonsTest
    private AddonRegistry registry;
 
    @Inject
-   private AddonManager addonManager;
+   private AddonRepository repository;
 
    @Test
    public void testInstallingAddonWithSingleOptionalAddonDependency() throws InterruptedException, TimeoutException
    {
       int addonCount = registry.getAddons().size();
-      final AddonId exampleId = AddonId.fromCoordinates("org.jboss.forge.addon:shell-spi,2.0.0-SNAPSHOT");
+      final AddonId mockAddon = AddonId.fromCoordinates("org.jboss.forge.addon:mock-addon,2.0.0-SNAPSHOT");
 
       /*
        * Ensure that the Addon instance we receive is requested before configuration is rescanned.
        */
-      addonManager.deploy(exampleId).perform();
-      Addon example = registry.getAddon(exampleId);
+      Addon example = registry.getAddon(mockAddon);
+      Assert.assertTrue(((MutableAddonRepository) repository).deploy(mockAddon, Arrays.asList(AddonDependencyEntry
+               .create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT", false)), null));
+      Assert.assertTrue(((MutableAddonRepository) repository).enable(mockAddon));
       Addons.waitUntilStarted(example, 10, TimeUnit.SECONDS);
       Assert.assertEquals(addonCount + 1, registry.getAddons().size());
    }
