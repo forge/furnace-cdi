@@ -149,7 +149,13 @@ public class ContainerServiceExtension implements Extension
                         Class<?> serviceType = null;
                         if (member instanceof Method)
                         {
-                           serviceType = ((Method) member).getReturnType();
+                           if (annotated instanceof AnnotatedParameter)
+                           {
+                              serviceType = ((Method) member).getParameterTypes()[((AnnotatedParameter<?>) annotated)
+                                       .getPosition()];
+                           }
+                           else
+                              serviceType = ((Method) member).getReturnType();
                         }
                         else if (member instanceof Field)
                         {
