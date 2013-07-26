@@ -53,11 +53,6 @@
       <dependencies>
          <dependency>
             <groupId>org.jboss.forge.furnace</groupId>
-            <artifactId>furnace-api</artifactId>
-            <version>${version.furnace}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.jboss.forge.furnace</groupId>
             <artifactId>container-cdi</artifactId>
             <classifier>forge-addon</classifier>
             <version>${project.version}</version>
@@ -71,6 +66,31 @@
             <groupId>org.jboss.forge.furnace</groupId>
             <artifactId>container-cdi-impl</artifactId>
             <version>${project.version}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.forge.furnace</groupId>
+            <artifactId>furnace-api</artifactId>
+            <version>${version.furnace}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.forge.furnace</groupId>
+            <artifactId>furnace-se</artifactId>
+            <version>${version.furnace}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.forge.furnace</groupId>
+            <artifactId>furnace-proxy</artifactId>
+            <version>${version.furnace}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.forge.furnace.test</groupId>
+            <artifactId>furnace-test-harness</artifactId>
+            <version>${version.furnace}</version>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.forge.furnace.test</groupId>
+            <artifactId>arquillian-furnace-classpath</artifactId>
+            <version>${version.furnace}</version>
          </dependency>
 
          <!-- CDI dependencies -->
