@@ -1,0 +1,91 @@
+== Furnace Container: CDI
+:idprefix: id_ 
+
+This addon is a 'Furnace container' that provides *lifecycle* and *service registry* support for dependent addons. 
+Other addons may depend on this to use the http://www.cdi-spec.org/[CDI 1.1] programming model and dependency injection 
+framework.
+
+=== Dependencies: None
+
+== Setup
+
+This Addon requires the following installation steps.
+
+=== Add configuration to pom.xml 
+
+To use this Furnace container, you must add it a dependency in the *pom.xml* of your `forge-addon` classified artifact:
+
+      <dependency>
+         <groupId>org.jboss.forge.furnace</groupId>
+         <artifactId>container-cdi</artifactId>
+         <classifier>forge-addon</classifier>
+         <version>${version}</version>
+      </dependency>
+      
+=== Add META-INF/beans.xml file
+In order for CDI to detect your classes, you must add the `src/main/resources/META-INF/beans.xml` file to your project.
+
+== Features
+
+Full CDI support::
+ Your addon may use the full CDI specification, provide CDI extensions, and do anything that would otherwise be possible
+in a Java SE or Java EE CDI environment.
+
+Automatic service registration::
+ CDI Beans annotated with `@org.jboss.forge.furnace.services.Exported`
+will automatically be added to the local `ServiceRegistry` for use in other addons.
+
+ @Exported
+ public class ServiceX {
+    // Will be available for use in dependent addons
+ }
+
+Injection of services:: Any services `@Exported` by addons declared as dependencies of your addon will be made 
+available via the dependency injection model. Service wiring occurs automatically.
+
+ public class ConsumerY {
+    @Inject private ServiceX service;
+ }
+
+Observable container events::
+ The Furnace container publishes several observable events to all addons throughout their lifecycle.
+ 
+[options="header"]
+|===
+|Event Type |Description
+
+|@PostStartup
+|Fired when this addon is has been fully started by the Furnace container, and may begin its work.
+
+|@PreShutdown
+|Fired when this addon is about to be shut down by the Furnace container.
+
+|===
+
+
+Injection of Furnace APIs:: This container also allows for injection of some of the core Furnace APIs into your
+objects. Below is a list of all injectable API types.
+
+[options="header"]
+|===
+|Injectable Type |Description
+
+|@Inject private Furnace service;
+|A handle to the Furnace container in which this addon is being run.
+    
+    
+|@Inject private Addon self;
+|A reference to this addon itself. Allows access to the addon version, `ClassLoader`, service registry, current 
+lifecycle status, and addon dependencies.
+    
+|@Inject private AddonRegistry addonRegistry;
+|A reference to the global Furnace addon registry - can be used to retrieve addon and exported service instances.
+    
+|@Inject private AddonRepository repository;
+|A reference to the repository in which this addon is deployed. Can be used to 
+    
+|@Inject private ServiceRegistry serviceRegistry;
+|A reference to the service registry of this addon. Can be used to retrieve service instances from this addon at 
+runtime.
+
+|===
