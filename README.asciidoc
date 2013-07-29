@@ -13,7 +13,7 @@ This Addon requires the following installation steps.
 
 === Add configuration to pom.xml 
 
-To use this Furnace container, you must add it a dependency in the *pom.xml* of your `forge-addon` classified artifact:
+To use this Furnace container, you must add it as a dependency in the *pom.xml* of your `forge-addon` classified artifact:
 
       <dependency>
          <groupId>org.jboss.forge.furnace</groupId>
