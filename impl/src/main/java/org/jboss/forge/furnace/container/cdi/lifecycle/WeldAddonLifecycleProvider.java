@@ -26,7 +26,7 @@ import org.jboss.forge.furnace.util.Assert;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.jboss.weld.resources.spi.ResourceLoader;
 
-public class LifecycleProviderImpl implements AddonLifecycleProvider
+public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 {
    private Furnace furnace;
    private AddonRegistry addonRegistry;
