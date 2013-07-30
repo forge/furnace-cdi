@@ -9,9 +9,10 @@ import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.exception.ContainerException;
 import org.jboss.forge.furnace.lifecycle.AddonLifecycleProvider;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
-import org.jboss.forge.furnace.services.ExportedInstance;
+import org.jboss.forge.furnace.services.Imported;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
 import org.junit.Test;
@@ -72,11 +73,12 @@ public class NullServiceRegistryLookupTest
    @Inject
    private AddonRegistry registry;
 
-   @Test
+   @Test(expected = ContainerException.class)
    public void testServiceRegistryNotNull() throws Exception
    {
-      ExportedInstance<PublishedService> instance = registry.getExportedInstance(PublishedService.class);
-      Assert.assertNull(instance);
+      Imported<PublishedService> instance = registry.getInstance(PublishedService.class);
+      Assert.assertNotNull(instance);
+      instance.get();
    }
 
 }

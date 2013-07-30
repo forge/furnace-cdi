@@ -8,8 +8,8 @@ import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.proxy.ForgeProxy;
 import org.jboss.forge.furnace.proxy.Proxies;
-import org.jboss.forge.furnace.services.ExportedInstance;
-import org.jboss.forge.furnace.services.ServiceRegistry;
+import org.jboss.forge.furnace.spi.ExportedInstance;
+import org.jboss.forge.furnace.spi.ServiceRegistry;
 import org.jboss.forge.furnace.util.AddonFilters;
 import org.jboss.forge.furnace.util.ClassLoaders;
 

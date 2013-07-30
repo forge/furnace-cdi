@@ -9,9 +9,9 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.arquillian.AddonDependency;
 import org.jboss.forge.arquillian.Dependencies;
 import org.jboss.forge.arquillian.archive.ForgeArchive;
-import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
-import org.jboss.forge.furnace.services.ExportedInstance;
+import org.jboss.forge.furnace.spi.ExportedInstance;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
 import org.junit.Test;
@@ -52,43 +52,43 @@ public class ContainerServiceDetectionTest
    }
 
    @Inject
-   private AddonRegistry registry;
+   private Addon addon;
 
    @Test
    public void testRegisteredServices()
    {
-      Assert.assertNotNull(registry.getExportedInstance(ExportedConcreteClass.class));
-      Assert.assertNull(registry.getExportedInstance(ExportedAbstractClass.class));
+      Assert.assertNotNull(addon.getServiceRegistry().getExportedInstance(ExportedConcreteClass.class));
+      Assert.assertNull(addon.getServiceRegistry().getExportedInstance(ExportedAbstractClass.class));
 
-      Assert.assertNotNull(registry.getExportedInstance(ImplementingClass1.class));
-      Assert.assertNotNull(registry.getExportedInstance(ImplementingClass2.class));
+      Assert.assertNotNull(addon.getServiceRegistry().getExportedInstance(ImplementingClass1.class));
+      Assert.assertNotNull(addon.getServiceRegistry().getExportedInstance(ImplementingClass2.class));
    }
 
    @Test
    public void testGetExportedInstances()
    {
-      Assert.assertNotNull(registry.getExportedInstance(ExportedConcreteClass.class).get());
-      Assert.assertNotNull(registry.getExportedInstance(ImplementingClass1.class).get());
-      Assert.assertNotNull(registry.getExportedInstance(ImplementingClass2.class).get());
+      Assert.assertNotNull(addon.getServiceRegistry().getExportedInstance(ExportedConcreteClass.class).get());
+      Assert.assertNotNull(addon.getServiceRegistry().getExportedInstance(ImplementingClass1.class).get());
+      Assert.assertNotNull(addon.getServiceRegistry().getExportedInstance(ImplementingClass2.class).get());
    }
 
    @Test(expected = Exception.class)
    public void testGetExportedInstanceBySharedAbstractClass()
    {
-      registry.getExportedInstance(AbstractImplementation.class);
+      addon.getServiceRegistry().getExportedInstance(AbstractImplementation.class);
    }
 
    @Test(expected = Exception.class)
    public void testGetExportedInstanceBySharedInterface()
    {
-      registry.getExportedInstance(ExportedInterface.class);
+      addon.getServiceRegistry().getExportedInstance(ExportedInterface.class);
    }
 
    @Test
    public void testGetExportedInstancesByBaseType()
    {
-      Set<ExportedInstance<ExportedInterface>> byInterface = registry.getExportedInstances(ExportedInterface.class);
-      Set<ExportedInstance<AbstractImplementation>> byAbstractBaseClass = registry
+      Set<ExportedInstance<ExportedInterface>> byInterface = addon.getServiceRegistry().getExportedInstances(ExportedInterface.class);
+      Set<ExportedInstance<AbstractImplementation>> byAbstractBaseClass = addon.getServiceRegistry()
                .getExportedInstances(AbstractImplementation.class);
 
       Assert.assertEquals(2, byInterface.size());

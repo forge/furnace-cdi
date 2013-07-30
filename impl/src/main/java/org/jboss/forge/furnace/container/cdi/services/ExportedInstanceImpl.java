@@ -18,7 +18,7 @@ import org.jboss.forge.furnace.container.cdi.impl.ServiceRegistryImpl;
 import org.jboss.forge.furnace.exception.ContainerException;
 import org.jboss.forge.furnace.proxy.ClassLoaderInterceptor;
 import org.jboss.forge.furnace.proxy.Proxies;
-import org.jboss.forge.furnace.services.ExportedInstance;
+import org.jboss.forge.furnace.spi.ExportedInstance;
 import org.jboss.forge.furnace.util.ClassLoaders;
 
 public class ExportedInstanceImpl<R> implements ExportedInstance<R>

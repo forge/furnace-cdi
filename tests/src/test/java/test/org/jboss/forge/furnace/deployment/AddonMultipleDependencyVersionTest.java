@@ -10,7 +10,8 @@ import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
-import org.jboss.forge.furnace.services.ExportedInstance;
+import org.jboss.forge.furnace.services.Imported;
+import org.jboss.forge.furnace.spi.ExportedInstance;
 import org.jboss.forge.furnace.util.AddonFilters;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
@@ -78,7 +79,7 @@ public class AddonMultipleDependencyVersionTest
    @Test
    public void testVersionLookup() throws Exception
    {
-      ExportedInstance<PublishedService> exportedInstance = registry.getExportedInstance(PublishedService.class);
+      Imported<PublishedService> exportedInstance = registry.getInstance(PublishedService.class);
       Assert.assertNotNull(exportedInstance);
       PublishedService publishedService = exportedInstance.get();
       Assert.assertNotNull(publishedService);

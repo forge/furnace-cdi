@@ -3,7 +3,7 @@ package org.jboss.forge.furnace.container.cdi.impl;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
-import org.jboss.forge.furnace.services.ServiceRegistry;
+import org.jboss.forge.furnace.spi.ServiceRegistry;
 
 @Singleton
 public class ServiceRegistryProducer
