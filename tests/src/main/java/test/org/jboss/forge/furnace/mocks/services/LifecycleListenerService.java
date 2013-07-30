@@ -1,4 +1,4 @@
-package org.example;
+package test.org.jboss.forge.furnace.mocks.services;
 
 import java.io.IOException;
 

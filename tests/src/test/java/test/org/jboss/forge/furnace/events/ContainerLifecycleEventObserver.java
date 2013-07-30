@@ -1,4 +1,4 @@
-package test.org.jboss.forge.furnace;
+package test.org.jboss.forge.furnace.events;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Singleton;

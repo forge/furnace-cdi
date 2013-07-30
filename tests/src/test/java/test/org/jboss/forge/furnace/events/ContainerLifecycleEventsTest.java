@@ -4,7 +4,7 @@
  * Licensed under the Eclipse Public License version 1.0, available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package test.org.jboss.forge.furnace;
+package test.org.jboss.forge.furnace.events;
 
 import javax.inject.Inject;
 import javax.xml.xpath.XPathFactory;

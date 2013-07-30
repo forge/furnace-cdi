@@ -1,11 +1,7 @@
-package test.org.jboss.forge.furnace.dependencies;
+package test.org.jboss.forge.furnace.events;
 
 import javax.inject.Inject;
 
-import org.example.event.EventPayload1;
-import org.example.event.EventPayload3;
-import org.example.event.EventResponseService;
-import org.example.event.EventService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.arquillian.AddonDependency;
@@ -16,6 +12,11 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import test.org.jboss.forge.furnace.mocks.event.EventPayload1;
+import test.org.jboss.forge.furnace.mocks.event.EventPayload3;
+import test.org.jboss.forge.furnace.mocks.event.EventResponseService;
+import test.org.jboss.forge.furnace.mocks.event.EventService;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>

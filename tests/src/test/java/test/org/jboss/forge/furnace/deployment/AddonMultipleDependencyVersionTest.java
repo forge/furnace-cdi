@@ -2,8 +2,6 @@ package test.org.jboss.forge.furnace.deployment;
 
 import javax.inject.Inject;
 
-import org.example.LifecycleListenerService;
-import org.example.PublishedService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.forge.arquillian.AddonDependency;
@@ -18,6 +16,9 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import test.org.jboss.forge.furnace.mocks.services.LifecycleListenerService;
+import test.org.jboss.forge.furnace.mocks.services.PublishedService;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>

@@ -1,4 +1,4 @@
-package org.example.event;
+package test.org.jboss.forge.furnace.mocks.event;
 
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;

@@ -4,7 +4,7 @@
  * Licensed under the Eclipse Public License version 1.0, available at
  * http://www.eclipse.org/legal/epl-v10.html
  */
-package org.example.extension;
+package test.org.jboss.forge.furnace.mocks.extension;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.spi.Extension;
