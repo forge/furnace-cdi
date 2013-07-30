@@ -79,7 +79,7 @@ public class AddonMultipleDependencyVersionTest
    @Test
    public void testVersionLookup() throws Exception
    {
-      Imported<PublishedService> exportedInstance = registry.getInstance(PublishedService.class);
+      Imported<PublishedService> exportedInstance = registry.getServices(PublishedService.class);
       Assert.assertNotNull(exportedInstance);
       PublishedService publishedService = exportedInstance.get();
       Assert.assertNotNull(publishedService);

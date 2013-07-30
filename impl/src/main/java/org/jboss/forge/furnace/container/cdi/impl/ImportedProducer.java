@@ -37,7 +37,7 @@ public class ImportedProducer
 
          Type[] typeArguments = parameterizedType.getActualTypeArguments();
          Class<T> importedType = (Class<T>) typeArguments[0];
-         return registry.getInstance(importedType);
+         return registry.getServices(importedType);
       }
       else
       {

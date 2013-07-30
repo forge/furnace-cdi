@@ -76,7 +76,7 @@ public class NullServiceRegistryLookupTest
    @Test(expected = ContainerException.class)
    public void testServiceRegistryNotNull() throws Exception
    {
-      Imported<PublishedService> instance = registry.getInstance(PublishedService.class);
+      Imported<PublishedService> instance = registry.getServices(PublishedService.class);
       Assert.assertNotNull(instance);
       instance.get();
    }

@@ -68,7 +68,7 @@ public class AddonRegistryInstanceLookupTest
    @Test
    public void testMissingNamedLookupReturnsEmptyInstance() throws Exception
    {
-      Imported<PublishedService> instance = registry.getInstance("org.example.blah.NotExistsBadClassThing");
+      Imported<PublishedService> instance = registry.getServices("org.example.blah.NotExistsBadClassThing");
       Assert.assertNotNull(instance);
       Assert.assertFalse(instance.isAmbiguous());
       Assert.assertFalse(instance.isSatisfied());
@@ -77,7 +77,7 @@ public class AddonRegistryInstanceLookupTest
    @Test
    public void testMissingTypedLookupReturnsEmptyInstance() throws Exception
    {
-      Imported<AddonDependencyEntry> instance = registry.getInstance(AddonDependencyEntry.class);
+      Imported<AddonDependencyEntry> instance = registry.getServices(AddonDependencyEntry.class);
       Assert.assertNotNull(instance);
       Assert.assertFalse(instance.isAmbiguous());
       Assert.assertFalse(instance.isSatisfied());
@@ -86,7 +86,7 @@ public class AddonRegistryInstanceLookupTest
    @Test
    public void testTypedLookupReturnsProperType() throws Exception
    {
-      Imported<PublishedService> instance = registry.getInstance(PublishedService.class);
+      Imported<PublishedService> instance = registry.getServices(PublishedService.class);
       Assert.assertNotNull(instance);
       PublishedService service = instance.get();
       Assert.assertNotNull(service);
@@ -95,7 +95,7 @@ public class AddonRegistryInstanceLookupTest
    @Test
    public void testTypedLookupCanBeIterated() throws Exception
    {
-      Imported<PublishedService> instance = registry.getInstance(PublishedService.class);
+      Imported<PublishedService> instance = registry.getServices(PublishedService.class);
       Assert.assertFalse(instance.isAmbiguous());
       Assert.assertTrue(instance.isSatisfied());
       Iterator<PublishedService> iterator = instance.iterator();
@@ -107,7 +107,7 @@ public class AddonRegistryInstanceLookupTest
    @Test
    public void testNameLookupReturnsAllMatches() throws Exception
    {
-      Imported<PublishedService> instance = registry.getInstance(PublishedService.class.getName());
+      Imported<PublishedService> instance = registry.getServices(PublishedService.class.getName());
       Assert.assertTrue(instance.isAmbiguous());
       Assert.assertTrue(instance.isSatisfied());
 
