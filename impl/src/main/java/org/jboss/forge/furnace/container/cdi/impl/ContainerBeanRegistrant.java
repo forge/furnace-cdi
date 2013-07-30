@@ -16,6 +16,7 @@ public class ContainerBeanRegistrant implements Extension
       event.addAnnotatedType(manager.createAnnotatedType(AddonRepositoryProducer.class));
       event.addAnnotatedType(manager.createAnnotatedType(CrossContainerObserverMethod.class));
       event.addAnnotatedType(manager.createAnnotatedType(FurnaceProducer.class));
+      event.addAnnotatedType(manager.createAnnotatedType(ImportedProducer.class));
       event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryProducer.class));
    }
 }

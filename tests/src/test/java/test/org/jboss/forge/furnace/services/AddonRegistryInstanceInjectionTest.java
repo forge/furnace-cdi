@@ -1,0 +1,119 @@
+package test.org.jboss.forge.furnace.services;
+
+import java.util.Iterator;
+
+import javax.inject.Inject;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.forge.arquillian.AddonDependency;
+import org.jboss.forge.arquillian.Dependencies;
+import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.furnace.exception.ContainerException;
+import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
+import org.jboss.forge.furnace.services.Imported;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import test.org.jboss.forge.furnace.mocks.services.PublishedService;
+
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
+ */
+@RunWith(Arquillian.class)
+public class AddonRegistryInstanceInjectionTest
+{
+   @Deployment(order = 2)
+   @Dependencies({
+            @AddonDependency(name = "org.jboss.forge.furnace:container-cdi", version = "2.0.0-SNAPSHOT")
+   })
+   public static ForgeArchive getDeployment()
+   {
+      ForgeArchive archive = ShrinkWrap
+               .create(ForgeArchive.class)
+               .addBeansXML()
+               .addAsAddonDependencies(
+                        AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT"),
+                        AddonDependencyEntry.create("dependency", "1")
+               );
+
+      return archive;
+   }
+
+   @Deployment(name = "dependency,1", testable = false, order = 1)
+   public static ForgeArchive getDependencyDeployment()
+   {
+      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+               .addClasses(PublishedService.class)
+               .addAsLocalServices(PublishedService.class);
+
+      return archive;
+   }
+
+   @Deployment(name = "other,1", testable = false, order = 0)
+   public static ForgeArchive getContainerDeployment()
+   {
+      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+               .addClasses(PublishedService.class)
+               .addAsLocalServices(PublishedService.class);
+
+      return archive;
+   }
+
+   @Inject
+   private Imported<PublishedService> instance;
+   @Inject
+   private Imported<AddonDependencyEntry> missing;
+
+   @Test
+   public void testInjectionTypedLookupMissing() throws Exception
+   {
+      Assert.assertNotNull(missing);
+      Assert.assertFalse(missing.isAmbiguous());
+      Assert.assertFalse(missing.isSatisfied());
+   }
+
+   @Test(expected = ContainerException.class)
+   public void testInjectionTypedLookupMissingGetThrowsException() throws Exception
+   {
+      missing.get();
+   }
+
+   @Test
+   public void testInjectionTypedLookupMissingIteratorIsEmpty() throws Exception
+   {
+      Iterator<AddonDependencyEntry> iterator = missing.iterator();
+      Assert.assertNotNull(iterator);
+      Assert.assertFalse(iterator.hasNext());
+   }
+
+   @Test
+   public void testInjectionTypedLookup() throws Exception
+   {
+      Assert.assertNotNull(instance);
+      Assert.assertFalse(instance.isAmbiguous());
+      Assert.assertTrue(instance.isSatisfied());
+   }
+
+   @Test
+   public void testTypedLookupReturnsProperType() throws Exception
+   {
+      Assert.assertNotNull(instance);
+      PublishedService service = instance.get();
+      Assert.assertNotNull(service);
+   }
+
+   @Test
+   public void testTypedLookupCanBeIterated() throws Exception
+   {
+      Assert.assertFalse(instance.isAmbiguous());
+      Assert.assertTrue(instance.isSatisfied());
+      Iterator<PublishedService> iterator = instance.iterator();
+      Assert.assertTrue(iterator.hasNext());
+      Assert.assertNotNull(iterator.next());
+      Assert.assertFalse(iterator.hasNext());
+   }
+
+}
