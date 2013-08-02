@@ -26,7 +26,7 @@ public class AddonDependencyInjectionTest
 {
    @Deployment(order = 2)
    @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi", version = "2.0.0-SNAPSHOT")
+            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
    })
    public static ForgeArchive getDeployment()
    {
@@ -36,7 +36,7 @@ public class AddonDependencyInjectionTest
                .addBeansXML()
                .addAsServiceProvider(Extension.class, TestExtension.class)
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi", "2.0.0-SNAPSHOT"),
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
                         AddonDependencyEntry.create("dependency", "2")
                );
 
@@ -49,7 +49,7 @@ public class AddonDependencyInjectionTest
       ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class, "dependency.jar")
                .addClasses(PublishedService.class)
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi", "2.0.0-SNAPSHOT")
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                )
                .addBeansXML();
 

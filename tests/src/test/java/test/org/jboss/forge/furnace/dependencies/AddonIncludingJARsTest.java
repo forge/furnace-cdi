@@ -22,7 +22,7 @@ public class AddonIncludingJARsTest
 {
    @Deployment
    @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi", version = "2.0.0-SNAPSHOT")
+            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
    })
    public static ForgeArchive getDeployment()
    {
@@ -30,7 +30,7 @@ public class AddonIncludingJARsTest
                .create(ForgeArchive.class)
                .addAsLibrary("cdi-api-1.0.jar", "cdi-api.jar")
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi", "2.0.0-SNAPSHOT")
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                )
                .addBeansXML();
 

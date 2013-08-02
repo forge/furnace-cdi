@@ -29,7 +29,7 @@ public class AddonMultipleDependencyVersionTest
 {
    @Deployment(order = 1)
    @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi", version = "2.0.0-SNAPSHOT")
+            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
    })
    public static ForgeArchive getDeployment()
    {
@@ -37,7 +37,7 @@ public class AddonMultipleDependencyVersionTest
                .create(ForgeArchive.class)
                .addBeansXML()
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi", "2.0.0-SNAPSHOT"),
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
                         AddonDependencyEntry.create("dep", "1"),
                         AddonDependencyEntry.create("dep", "2")
                );
@@ -52,7 +52,7 @@ public class AddonMultipleDependencyVersionTest
                .create(ForgeArchive.class)
                .addClass(LifecycleListenerService.class)
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi", "2.0.0-SNAPSHOT")
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                )
                .addBeansXML();
 
@@ -66,7 +66,7 @@ public class AddonMultipleDependencyVersionTest
                .create(ForgeArchive.class)
                .addClasses(LifecycleListenerService.class, PublishedService.class)
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi", "2.0.0-SNAPSHOT")
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                )
                .addBeansXML();
 
