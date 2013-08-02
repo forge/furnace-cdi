@@ -9,6 +9,7 @@ package test.org.jboss.forge.furnace.services;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.event.EventManager;
 import org.jboss.forge.furnace.lifecycle.AddonLifecycleProvider;
 import org.jboss.forge.furnace.lifecycle.ControlType;
 import org.jboss.forge.furnace.spi.ServiceRegistry;
@@ -38,6 +39,12 @@ public class NullAddonLifecycleProvider implements AddonLifecycleProvider
 
    @Override
    public ServiceRegistry getServiceRegistry(Addon addon) throws Exception
+   {
+      return null;
+   }
+
+   @Override
+   public EventManager getEventManager(Addon addon)
    {
       return null;
    }

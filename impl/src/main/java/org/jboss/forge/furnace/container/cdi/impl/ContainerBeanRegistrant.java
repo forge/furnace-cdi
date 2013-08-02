@@ -6,6 +6,7 @@ import javax.enterprise.inject.spi.BeforeBeanDiscovery;
 import javax.enterprise.inject.spi.Extension;
 
 import org.jboss.forge.furnace.container.cdi.events.CrossContainerObserverMethod;
+import org.jboss.forge.furnace.container.cdi.events.EventManagerProducer;
 
 public class ContainerBeanRegistrant implements Extension
 {
@@ -15,6 +16,7 @@ public class ContainerBeanRegistrant implements Extension
       event.addAnnotatedType(manager.createAnnotatedType(AddonRegistryProducer.class));
       event.addAnnotatedType(manager.createAnnotatedType(AddonRepositoryProducer.class));
       event.addAnnotatedType(manager.createAnnotatedType(CrossContainerObserverMethod.class));
+      event.addAnnotatedType(manager.createAnnotatedType(EventManagerProducer.class));
       event.addAnnotatedType(manager.createAnnotatedType(FurnaceProducer.class));
       event.addAnnotatedType(manager.createAnnotatedType(ImportedProducer.class));
       event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryProducer.class));

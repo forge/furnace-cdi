@@ -7,72 +7,119 @@
 package org.jboss.forge.furnace.container.cdi.events;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Set;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
 import javax.enterprise.inject.spi.EventMetadata;
+import javax.inject.Singleton;
 
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.container.cdi.impl.AddonProducer;
+import org.jboss.forge.furnace.container.cdi.util.BeanManagerUtils;
+import org.jboss.forge.furnace.event.EventManager;
 import org.jboss.forge.furnace.exception.ContainerException;
 import org.jboss.forge.furnace.services.Exported;
-import org.jboss.forge.furnace.spi.ExportedInstance;
-import org.jboss.forge.furnace.spi.ServiceRegistry;
 import org.jboss.forge.furnace.util.AddonFilters;
 import org.jboss.forge.furnace.util.Annotations;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
+@Singleton
 public class CrossContainerObserverMethod
 {
-   public void handleEvent(@Observes @Any Object event, EventMetadata metadata)
+   private ThreadLocal<Deque<InboundEvent>> stack;
+
+   public void handleEvent(@Observes @Any Object event, EventMetadata metadata, BeanManager manager)
    {
-      if (Annotations.isAnnotationPresent(event.getClass(), Exported.class))
+      try
       {
-         Set<Annotation> qualifiers = metadata.getQualifiers();
-         try
+         initStack();
+
+         Addon self = BeanManagerUtils.getContextualInstance(manager, AddonProducer.class).produceCurrentAddon();
+         if (self != null && Annotations.isAnnotationPresent(event.getClass(), Exported.class))
          {
-            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-            ClassLoader eventClassLoader = event.getClass().getClassLoader();
-            if (contextClassLoader.equals(eventClassLoader))
-            {
-               AddonRegistry addonRegistry = CDI.current().select(AddonRegistry.class).get();
-               for (Addon addon : addonRegistry.getAddons(AddonFilters.allStarted()))
+            Set<Annotation> qualifiers = metadata.getQualifiers();
+            if (!onStack(event, qualifiers))
+               try
                {
-                  // Events should not be fired back into the container from which they originated
-                  ClassLoader addonClassLoader = addon.getClassLoader();
-                  if (!(event.getClass().getClassLoader().equals(addonClassLoader)
-                           || contextClassLoader.equals(addonClassLoader)
-                           || ClassLoader.getSystemClassLoader().equals(eventClassLoader)))
+                  AddonRegistry addonRegistry = BeanManagerUtils.getContextualInstance(manager, AddonRegistry.class);
+                  for (Addon addon : addonRegistry.getAddons(AddonFilters.allStarted()))
                   {
-                     ServiceRegistry addonServiceRegistry = addon.getServiceRegistry();
-                     if (addonServiceRegistry != null)
+                     if (!self.getId().equals(addon.getId()))
                      {
-                        ExportedInstance<BeanManager> exportedInstance = addonServiceRegistry
-                                 .getExportedInstance(BeanManager.class);
-                        if (exportedInstance != null)
+                        EventManager remoteEventManager = addon.getEventManager();
+                        if (remoteEventManager != null)
                         {
-                           BeanManager manager = exportedInstance.get();
-                           manager.fireEvent(event, qualifiers.toArray(new Annotation[] {}));
+                           remoteEventManager.fireEvent(event, qualifiers.toArray(new Annotation[] {}));
                         }
                      }
                   }
                }
+               catch (Exception e)
+               {
+                  throw new ContainerException("Problems encountered during propagation of event [" + event
+                           + "] with qualifiers [" + qualifiers + "]", e);
+               }
+         }
+         else if (event instanceof InboundEvent)
+         {
+            try
+            {
+               push((InboundEvent) event);
+               manager.fireEvent(((InboundEvent) event).getEvent(), ((InboundEvent) event).getQualifiers());
+            }
+            finally
+            {
+               pop((InboundEvent) event);
             }
          }
-         catch (Exception e)
-         {
-            throw new ContainerException("Problems encountered during propagation of event [" + event
-                     + "] with qualifiers [" + qualifiers + "]", e);
-         }
       }
-      else
+      finally
       {
-         // do not propagate non-remote org.jboss.forge.furnace.container.cdi.events to other containers.
+         cleanupStack();
       }
+   }
+
+   private boolean onStack(Object event, Set<Annotation> qualifiers)
+   {
+      InboundEvent peek = peek();
+      if (peek != null && peek.equals(new InboundEvent(event, qualifiers.toArray(new Annotation[] {}))))
+         return true;
+      return false;
+   }
+
+   private void cleanupStack()
+   {
+      if (stack != null && stack.get() != null && stack.get().isEmpty())
+         stack.remove();
+   }
+
+   private void initStack()
+   {
+      if (stack == null)
+         stack = new ThreadLocal<Deque<InboundEvent>>();
+      if (stack.get() == null)
+         stack.set(new ArrayDeque<InboundEvent>());
+   }
+
+   private InboundEvent peek()
+   {
+      return this.stack.get().peek();
+   }
+
+   private InboundEvent pop(InboundEvent event)
+   {
+      return this.stack.get().pop();
+   }
+
+   private void push(InboundEvent event)
+   {
+      this.stack.get().push(event);
    }
 }

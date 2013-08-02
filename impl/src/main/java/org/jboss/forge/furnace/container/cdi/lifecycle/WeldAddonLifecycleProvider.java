@@ -5,6 +5,8 @@ import javax.enterprise.inject.spi.BeanManager;
 import org.jboss.forge.furnace.Furnace;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.container.cdi.events.EventManagerImpl;
+import org.jboss.forge.furnace.container.cdi.events.EventManagerProducer;
 import org.jboss.forge.furnace.container.cdi.impl.AddonProducer;
 import org.jboss.forge.furnace.container.cdi.impl.AddonRegistryProducer;
 import org.jboss.forge.furnace.container.cdi.impl.AddonRepositoryProducer;
@@ -17,6 +19,7 @@ import org.jboss.forge.furnace.container.cdi.weld.AddonResourceLoader;
 import org.jboss.forge.furnace.container.cdi.weld.ModularURLScanner;
 import org.jboss.forge.furnace.container.cdi.weld.ModularWeld;
 import org.jboss.forge.furnace.container.cdi.weld.ModuleScanResult;
+import org.jboss.forge.furnace.event.EventManager;
 import org.jboss.forge.furnace.event.PostStartup;
 import org.jboss.forge.furnace.event.PreShutdown;
 import org.jboss.forge.furnace.lifecycle.AddonLifecycleProvider;
@@ -34,6 +37,7 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
    private ServiceRegistry serviceRegistry;
    private BeanManager manager;
    private ModularWeld weld;
+   private EventManagerImpl eventManager;
 
    @Override
    public void initialize(Furnace furnace, AddonRegistry registry, Addon self)
@@ -73,13 +77,20 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 
          ContainerServiceExtension extension = BeanManagerUtils.getContextualInstance(manager,
                   ContainerServiceExtension.class);
+
          ServiceRegistryProducer serviceRegistryProducer = BeanManagerUtils.getContextualInstance(manager,
                   ServiceRegistryProducer.class);
          serviceRegistry = new ServiceRegistryImpl(furnace.getLockManager(), addon, manager, extension);
          serviceRegistryProducer.setServiceRegistry(serviceRegistry);
+         Assert.notNull(BeanManagerUtils.getContextualInstance(manager, ServiceRegistry.class),
+                  "InboundEvent registry was null.");
 
-         ServiceRegistry registry = BeanManagerUtils.getContextualInstance(manager, ServiceRegistry.class);
-         Assert.notNull(registry, "Service registry was null.");
+         EventManagerProducer eventManagerProducer = BeanManagerUtils.getContextualInstance(manager,
+                  EventManagerProducer.class);
+         eventManager = new EventManagerImpl(addon, manager);
+         eventManagerProducer.setEventManager(eventManager);
+         Assert.notNull(BeanManagerUtils.getContextualInstance(manager, EventManager.class),
+                  "InboundEvent registry was null.");
       }
    }
 
@@ -105,6 +116,12 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
    }
 
    @Override
+   public EventManager getEventManager(Addon addon)
+   {
+      return eventManager;
+   }
+
+   @Override
    public ServiceRegistry getServiceRegistry(Addon addon)
    {
       return serviceRegistry;
@@ -115,5 +132,4 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
    {
       return ControlType.DEPENDENTS;
    }
-
 }

@@ -12,7 +12,7 @@ public class ServiceRegistryProducer
 
    @Produces
    @Singleton
-   public ServiceRegistry produceGlobalAddonRepository()
+   public ServiceRegistry produce()
    {
       return registry;
    }
