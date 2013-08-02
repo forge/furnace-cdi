@@ -40,7 +40,7 @@ public class AddonInstancesAreSingletonsTest
 {
    @Deployment
    @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace:container-cdi", version = "2.0.0-SNAPSHOT")
+            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi", version = "2.0.0-SNAPSHOT")
    })
    public static ForgeArchive getDeployment()
    {
@@ -48,7 +48,7 @@ public class AddonInstancesAreSingletonsTest
                .create(ForgeArchive.class)
                .addBeansXML()
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT")
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi", "2.0.0-SNAPSHOT")
                );
 
       return archive;
@@ -71,7 +71,7 @@ public class AddonInstancesAreSingletonsTest
        */
       Addon example = registry.getAddon(mockAddon);
       Assert.assertTrue(((MutableAddonRepository) repository).deploy(mockAddon, Arrays.asList(AddonDependencyEntry
-               .create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT", false)), null));
+               .create("org.jboss.forge.furnace.container:cdi", "2.0.0-SNAPSHOT", false)), null));
       Assert.assertTrue(((MutableAddonRepository) repository).enable(mockAddon));
       Addons.waitUntilStarted(example, 10, TimeUnit.SECONDS);
       Assert.assertEquals(addonCount + 1, registry.getAddons().size());

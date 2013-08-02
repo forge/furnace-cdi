@@ -24,7 +24,7 @@ public class AddonCDIExtensionTest
 {
    @Deployment(order = 2)
    @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace:container-cdi", version = "2.0.0-SNAPSHOT")
+            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi", version = "2.0.0-SNAPSHOT")
    })
    public static ForgeArchive getDeployment()
    {
@@ -32,7 +32,7 @@ public class AddonCDIExtensionTest
                .addClasses(TestExtension.class)
                .addBeansXML()
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace:container-cdi", "2.0.0-SNAPSHOT")
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi", "2.0.0-SNAPSHOT")
                )
                .addAsServiceProvider(Extension.class, TestExtension.class);
 
