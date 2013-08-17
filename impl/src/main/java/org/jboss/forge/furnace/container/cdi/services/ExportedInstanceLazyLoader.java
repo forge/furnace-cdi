@@ -1,5 +1,6 @@
 package org.jboss.forge.furnace.container.cdi.services;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.enterprise.inject.spi.InjectionPoint;
@@ -51,7 +52,18 @@ public class ExportedInstanceLazyLoader implements ForgeProxy
       if (delegate == null)
          delegate = loadObject();
 
-      return thisMethod.invoke(delegate, args);
+      Object result;
+      try
+      {
+         result = thisMethod.invoke(delegate, args);
+      }
+      catch (InvocationTargetException e)
+      {
+         if (e.getCause() instanceof Exception)
+            throw (Exception) e.getCause();
+         throw e;
+      }
+      return result;
    }
 
    private Object loadObject() throws Exception
