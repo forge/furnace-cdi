@@ -42,7 +42,8 @@ public class ExportedInstanceLazyLoader implements ForgeProxy
       {
          if (thisMethod.getDeclaringClass().getName().equals(ForgeProxy.class.getName()))
          {
-            return delegate;
+            // Must call from "this." or method call is not properly processed by this class.
+            return this.getDelegate();
          }
       }
       catch (Exception e)
@@ -103,8 +104,11 @@ public class ExportedInstanceLazyLoader implements ForgeProxy
    }
 
    @Override
-   public Object getDelegate()
+   public Object getDelegate() throws Exception
    {
+      // Delegate must be loaded here when requested. Returning null can cause some breakage in CLAC.
+      if (delegate == null)
+         delegate = loadObject();
       return delegate;
    }
 
