@@ -13,7 +13,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -129,12 +131,17 @@ public class ContainerServiceExtension implements Extension
          final Annotated annotated = injectionPoint.getAnnotated();
          final Member member = injectionPoint.getMember();
 
-         Set<Type> typeClosure = annotated.getTypeClosure();
          Class<?> beanClass = entry.getValue();
+         Set<Type> typeClosure = annotated.getTypeClosure();
+         Set<Type> beanTypeClosure = new LinkedHashSet<Type>();
+         for (Type type : typeClosure)
+         {
+            beanTypeClosure.add(reifyWildcardsToObjects(type));
+         }
 
          Bean<?> serviceBean = new BeanBuilder<Object>(manager)
                   .beanClass(beanClass)
-                  .types(typeClosure)
+                  .types(beanTypeClosure)
                   .beanLifecycle(new ContextualLifecycle<Object>()
                   {
                      @Override
@@ -187,6 +194,68 @@ public class ContainerServiceExtension implements Extension
 
          event.addBean(serviceBean);
       }
+   }
+
+   private Type reifyWildcardsToObjects(final Type type)
+   {
+      if (type instanceof ParameterizedType)
+      {
+         final Type[] arguments = ((ParameterizedType) type).getActualTypeArguments();
+         if (arguments != null)
+         {
+            boolean modified = false;
+            final Type[] reifiedArguments = new Type[arguments.length];
+            for (int i = 0; i < arguments.length; i++)
+            {
+               final Type argument = arguments[i];
+               Type reified = argument;
+               if (argument instanceof WildcardType)
+               {
+                  if (((WildcardType) argument).getLowerBounds().length == 0)
+                  {
+                     Type[] upperBounds = ((WildcardType) argument).getUpperBounds();
+                     if (upperBounds.length == 1 && upperBounds[0].equals(Object.class))
+                        reified = Object.class;
+                  }
+
+               }
+               else
+               {
+                  reified = reifyWildcardsToObjects(argument);
+               }
+
+               reifiedArguments[i] = reified;
+
+               if (reified != argument)
+                  modified = true;
+            }
+
+            if (modified)
+            {
+               return new ParameterizedType()
+               {
+                  @Override
+                  public Type getRawType()
+                  {
+                     return ((ParameterizedType) type).getRawType();
+                  }
+
+                  @Override
+                  public Type getOwnerType()
+                  {
+                     return ((ParameterizedType) type).getOwnerType();
+                  }
+
+                  @Override
+                  public Type[] getActualTypeArguments()
+                  {
+                     return reifiedArguments;
+                  }
+               };
+            }
+         }
+      }
+      return type;
    }
 
    /*

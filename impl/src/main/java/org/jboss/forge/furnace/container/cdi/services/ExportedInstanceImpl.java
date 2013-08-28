@@ -19,6 +19,7 @@ import org.jboss.forge.furnace.exception.ContainerException;
 import org.jboss.forge.furnace.proxy.ClassLoaderInterceptor;
 import org.jboss.forge.furnace.proxy.Proxies;
 import org.jboss.forge.furnace.spi.ExportedInstance;
+import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.furnace.util.ClassLoaders;
 
 public class ExportedInstanceImpl<R> implements ExportedInstance<R>
@@ -35,6 +36,11 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
    public ExportedInstanceImpl(Addon addon, BeanManager manager, Bean<R> requestedBean, Class<R> requestedType,
             Class<? extends R> actualType)
    {
+      Assert.notNull(addon, "Source addon must not be null.");
+      Assert.notNull(manager, "Bean manager must not be null.");
+      Assert.notNull(requestedBean, "Requested bean must not be null.");
+      Assert.notNull(requestedType, "Requested type must not be null.");
+      Assert.notNull(actualType, "Actual type must not be null.");
       this.addon = addon;
       this.manager = manager;
       this.requestedBean = requestedBean;

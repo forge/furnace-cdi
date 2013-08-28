@@ -209,11 +209,17 @@ public class ServiceRegistryImpl implements ServiceRegistry
          {
             Set<Bean<?>> beans = manager.getBeans(type, getQualifiersFrom(type));
             Class<? extends T> assignableClass = (Class<? extends T>) type;
-            result.add(new ExportedInstanceImpl<T>(addon,
-                     manager, (Bean<T>) manager.resolve(beans),
-                     requestedLoadedType,
-                     assignableClass
-                     ));
+            for (Bean<?> bean : beans)
+            {
+               result.add(new ExportedInstanceImpl<T>(
+                        addon,
+                        manager,
+                        (Bean<T>) bean,
+                        requestedLoadedType,
+                        assignableClass
+                        ));
+
+            }
          }
       }
       return result;
