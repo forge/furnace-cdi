@@ -131,4 +131,22 @@ public class AddonRegistryInstanceLookupTest
       Assert.assertTrue(typeMatchFound);
    }
 
+   @Test
+   public void testAmbiguousSelect() throws Exception
+   {
+      Imported<PublishedService> instance = registry.getServices(PublishedService.class.getName());
+      Assert.assertTrue(instance.isAmbiguous());
+      PublishedService service = instance.selectExact(PublishedService.class);
+      Assert.assertNotNull(service);
+   }
+
+   @Test(expected = IllegalStateException.class)
+   public void testAmbiguousGetThrowsException() throws Exception
+   {
+      Imported<PublishedService> instance = registry.getServices(PublishedService.class.getName());
+      Assert.assertTrue(instance.isAmbiguous());
+      instance.get();
+      Assert.fail("Should not have been able to resolve.");
+   }
+
 }
