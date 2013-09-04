@@ -74,11 +74,17 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
                   + addon.getClassLoader() + "]", e);
       }
    }
-   
+
    @Override
    public Class<? extends R> getActualType()
    {
       return actualType;
+   }
+
+   @Override
+   public Addon getSourceAddon()
+   {
+      return addon;
    }
 
    @SuppressWarnings("unchecked")
