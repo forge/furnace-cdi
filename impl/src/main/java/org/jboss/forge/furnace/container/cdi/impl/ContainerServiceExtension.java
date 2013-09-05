@@ -80,6 +80,12 @@ public class ContainerServiceExtension implements Extension
       Class<?> injectionPointDeclaringType = Types.toClass(event.getInjectionPoint().getMember().getDeclaringClass());
       Class<?> injectionBeanValueType = Types.toClass(annotated.getBaseType());
 
+      Class<?> injectionPointConsumingType = null;
+      if (event.getInjectionPoint().getBean() != null)
+         injectionPointConsumingType = event.getInjectionPoint().getBean().getBeanClass();
+      else
+         injectionPointConsumingType = injectionPointDeclaringType;
+
       if (Instance.class.isAssignableFrom(injectionBeanValueType))
       {
          Type type = event.getInjectionPoint().getType();
@@ -92,7 +98,7 @@ public class ContainerServiceExtension implements Extension
 
       Exported exported = getExported(injectionBeanValueType);
 
-      boolean local = isClassLocal(injectionPointDeclaringType, injectionBeanValueType);
+      boolean local = isConsumerLocal(injectionPointConsumingType, injectionBeanValueType);
       if (!local)
       {
          if (exported != null)
@@ -266,7 +272,7 @@ public class ContainerServiceExtension implements Extension
       return services.keySet();
    }
 
-   private boolean isClassLocal(Class<?> reference, Class<?> type)
+   private boolean isConsumerLocal(Class<?> reference, Class<?> type)
    {
       ClassLoader referenceLoader = reference.getClassLoader();
       ClassLoader typeLoader = type.getClassLoader();
