@@ -19,19 +19,20 @@ import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.services.Imported;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import test.org.jboss.forge.furnace.mocks.PlainBean;
 import test.org.jboss.forge.furnace.mocks.PlainInterface;
+import test.org.jboss.forge.furnace.mocks.ServiceBean;
+import test.org.jboss.forge.furnace.mocks.ServiceInterface;
 
 /**
  * 
  * @author <a href="ggastald@redhat.com">George Gastaldi</a>
  */
 @RunWith(Arquillian.class)
-@Ignore("FORGE-1206")
+@org.junit.Ignore("FORGE-1206")
 public class AddonRegistryTest
 {
    @Deployment
@@ -41,7 +42,7 @@ public class AddonRegistryTest
    public static ForgeArchive getDeployment()
    {
       ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-               .addClasses(PlainInterface.class, PlainBean.class)
+               .addClasses(PlainInterface.class, PlainBean.class, ServiceInterface.class, ServiceBean.class)
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                )
@@ -54,11 +55,23 @@ public class AddonRegistryTest
    private AddonRegistry addonRegistry;
 
    @Test
-   public void testImported() throws Exception
+   public void testAddonRegistryShouldNotReturnServicesWithExportedAnnotation() throws Exception
    {
       Imported<PlainInterface> services = addonRegistry.getServices(PlainInterface.class);
+      Assert.assertTrue(services.isSatisfied());
+      Assert.assertFalse(services.isAmbiguous());
       Assert.assertFalse(services.iterator().hasNext());
       Assert.assertNull(services.get());
+   }
+
+   @Test
+   public void testAddonRegistryShouldReturnImportedWithExportedAnnotation() throws Exception
+   {
+      Imported<ServiceInterface> services = addonRegistry.getServices(ServiceInterface.class);
+      Assert.assertTrue(services.isSatisfied());
+      Assert.assertFalse(services.isAmbiguous());
+      Assert.assertTrue(services.iterator().hasNext());
+      Assert.assertNotNull(services.get());
    }
 
 }
