@@ -43,7 +43,7 @@ public class CrossContainerObserverMethod
          if (self != null && !(event instanceof InboundEvent))
          {
             Set<Annotation> qualifiers = metadata.getQualifiers();
-            if (!onStack(event, qualifiers))
+            if (!onStack(event, qualifiers) && !isLocal(qualifiers))
                try
                {
                   AddonRegistry addonRegistry = BeanManagerUtils.getContextualInstance(manager, AddonRegistry.class);
@@ -54,7 +54,7 @@ public class CrossContainerObserverMethod
                         EventManager remoteEventManager = addon.getEventManager();
                         if (remoteEventManager != null)
                         {
-                           remoteEventManager.fireEvent(event, qualifiers.toArray(new Annotation[] {}));
+                           remoteEventManager.fireEvent(event, qualifiers.toArray(new Annotation[qualifiers.size()]));
                         }
                      }
                   }
@@ -88,10 +88,20 @@ public class CrossContainerObserverMethod
       }
    }
 
+   private boolean isLocal(Set<Annotation> qualifiers)
+   {
+      for (Annotation annotation : qualifiers)
+      {
+         if (annotation instanceof Local)
+            return true;
+      }
+      return false;
+   }
+
    private boolean onStack(Object event, Set<Annotation> qualifiers)
    {
       InboundEvent peek = peek();
-      if (peek != null && peek.equals(new InboundEvent(event, qualifiers.toArray(new Annotation[] {}))))
+      if (peek != null && peek.equals(new InboundEvent(event, qualifiers.toArray(new Annotation[qualifiers.size()]))))
          return true;
       return false;
    }
