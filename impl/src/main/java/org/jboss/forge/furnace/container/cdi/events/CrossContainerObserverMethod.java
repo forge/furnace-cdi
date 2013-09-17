@@ -77,10 +77,6 @@ public class CrossContainerObserverMethod
                pop((InboundEvent) event);
             }
          }
-         else
-         {
-            System.out.println("Another scenario");
-         }
       }
       finally
       {
