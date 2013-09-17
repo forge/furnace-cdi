@@ -43,7 +43,7 @@ public class CrossContainerObserverMethod
          if (self != null && !(event instanceof InboundEvent))
          {
             Set<Annotation> qualifiers = metadata.getQualifiers();
-            if (!onStack(event, qualifiers) && !isLocal(qualifiers))
+            if (!isLocal(qualifiers) && !onStack(event, qualifiers))
                try
                {
                   AddonRegistry addonRegistry = BeanManagerUtils.getContextualInstance(manager, AddonRegistry.class);
