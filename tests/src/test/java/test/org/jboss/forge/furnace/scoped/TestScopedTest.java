@@ -64,13 +64,14 @@ public class TestScopedTest
    @Ignore("FORGE-1209")
    public void testSatisfiedImportedWithCustomScope() throws Exception
    {
-      Assert.assertFalse("Should not be satisfied since there is no Context in scope", modelInstance.isSatisfied());
+      Assert.assertTrue("Should not be satisfied since there is no Context in scope", modelInstance.isUnsatisfied());
       TestScopedContext.ACTIVE = true;
-      Assert.assertTrue("Should be satisfied since there command context was initialized", modelInstance.isSatisfied());
+      Assert.assertFalse("Should be satisfied since there command context was initialized",
+               modelInstance.isUnsatisfied());
       modelInstance.get().doSomething();
       TestScopedContext.ACTIVE = false;
-      Assert.assertFalse("Should not be satisfied since there is no Context in scope after finish is called",
-               modelInstance.isSatisfied());
+      Assert.assertTrue("Should not be satisfied since there is no Context in scope after finish is called",
+               modelInstance.isUnsatisfied());
    }
 
 }

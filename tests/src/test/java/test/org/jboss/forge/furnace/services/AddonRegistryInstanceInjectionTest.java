@@ -72,7 +72,7 @@ public class AddonRegistryInstanceInjectionTest
    {
       Assert.assertNotNull(missing);
       Assert.assertFalse(missing.isAmbiguous());
-      Assert.assertFalse(missing.isSatisfied());
+      Assert.assertTrue(missing.isUnsatisfied());
    }
 
    @Test(expected = ContainerException.class)
@@ -94,7 +94,7 @@ public class AddonRegistryInstanceInjectionTest
    {
       Assert.assertNotNull(instance);
       Assert.assertFalse(instance.isAmbiguous());
-      Assert.assertTrue(instance.isSatisfied());
+      Assert.assertFalse(instance.isUnsatisfied());
    }
 
    @Test
@@ -109,7 +109,7 @@ public class AddonRegistryInstanceInjectionTest
    public void testTypedLookupCanBeIterated() throws Exception
    {
       Assert.assertFalse(instance.isAmbiguous());
-      Assert.assertTrue(instance.isSatisfied());
+      Assert.assertFalse(instance.isUnsatisfied());
       Iterator<PublishedService> iterator = instance.iterator();
       Assert.assertTrue(iterator.hasNext());
       Assert.assertNotNull(iterator.next());

@@ -71,7 +71,7 @@ public class AddonRegistryInstanceLookupTest
       Imported<PublishedService> instance = registry.getServices("org.example.blah.NotExistsBadClassThing");
       Assert.assertNotNull(instance);
       Assert.assertFalse(instance.isAmbiguous());
-      Assert.assertFalse(instance.isSatisfied());
+      Assert.assertTrue(instance.isUnsatisfied());
    }
 
    @Test
@@ -80,7 +80,7 @@ public class AddonRegistryInstanceLookupTest
       Imported<AddonDependencyEntry> instance = registry.getServices(AddonDependencyEntry.class);
       Assert.assertNotNull(instance);
       Assert.assertFalse(instance.isAmbiguous());
-      Assert.assertFalse(instance.isSatisfied());
+      Assert.assertTrue(instance.isUnsatisfied());
    }
 
    @Test
@@ -97,11 +97,19 @@ public class AddonRegistryInstanceLookupTest
    {
       Imported<PublishedService> instance = registry.getServices(PublishedService.class);
       Assert.assertFalse(instance.isAmbiguous());
-      Assert.assertTrue(instance.isSatisfied());
+      Assert.assertFalse(instance.isUnsatisfied());
       Iterator<PublishedService> iterator = instance.iterator();
       Assert.assertTrue(iterator.hasNext());
       Assert.assertNotNull(iterator.next());
       Assert.assertFalse(iterator.hasNext());
+   }
+
+   @Test(expected = IllegalStateException.class)
+   public void testGetWhenAmbiguousThrowsException() throws Exception
+   {
+      Imported<PublishedService> instance = registry.getServices(PublishedService.class.getName());
+      Assert.assertTrue(instance.isAmbiguous());
+      instance.get();
    }
 
    @Test
@@ -109,7 +117,7 @@ public class AddonRegistryInstanceLookupTest
    {
       Imported<PublishedService> instance = registry.getServices(PublishedService.class.getName());
       Assert.assertTrue(instance.isAmbiguous());
-      Assert.assertTrue(instance.isSatisfied());
+      Assert.assertFalse(instance.isUnsatisfied());
 
       Assert.assertNotNull(instance);
       Iterator<PublishedService> iterator = instance.iterator();

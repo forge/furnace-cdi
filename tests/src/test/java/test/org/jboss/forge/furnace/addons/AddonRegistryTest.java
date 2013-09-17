@@ -57,7 +57,7 @@ public class AddonRegistryTest
    public void testAddonRegistryShouldReturnServicesWithoutExportedAnnotation() throws Exception
    {
       Imported<PlainInterface> services = addonRegistry.getServices(PlainInterface.class);
-      Assert.assertTrue(services.isSatisfied());
+      Assert.assertFalse(services.isUnsatisfied());
       Assert.assertFalse(services.isAmbiguous());
       Assert.assertTrue(services.iterator().hasNext());
       Assert.assertNotNull(services.iterator().next());
@@ -68,7 +68,7 @@ public class AddonRegistryTest
    public void testAddonRegistryShouldReturnImportedWithExportedAnnotation() throws Exception
    {
       Imported<ServiceInterface> services = addonRegistry.getServices(ServiceInterface.class);
-      Assert.assertTrue(services.isSatisfied());
+      Assert.assertFalse(services.isUnsatisfied());
       Assert.assertFalse(services.isAmbiguous());
       Assert.assertNotNull(services.get());
       Assert.assertNotNull(services.iterator().next());
