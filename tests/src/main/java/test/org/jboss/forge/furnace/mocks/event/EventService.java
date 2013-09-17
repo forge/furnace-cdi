@@ -20,12 +20,12 @@ public class EventService
    private boolean remoteResponseRecieved = false;
    private boolean wrongResponseRecieved = false;
 
-   public void fire()
+   public void firePayload1()
    {
       request.fire(new EventPayload1());
    }
 
-   public void fireNonRemote()
+   public void firePayload2()
    {
       request.fire(new EventPayload2());
    }

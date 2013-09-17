@@ -32,19 +32,17 @@ Full CDI support::
 in a Java SE or Java EE CDI environment.
 
 Automatic service registration::
- CDI Beans annotated with `@org.jboss.forge.furnace.services.Exported`
-will automatically be added to the local `ServiceRegistry` for use in other addons.
+ CDI Beans will automatically be added to the local `ServiceRegistry` for use in other addons.
 
- @Exported
  public class ServiceX {
     // Will be available for use in dependent addons
  }
 
-Injection of services:: Any services `@Exported` by addons declared as dependencies of your addon will be made 
+Injection of services:: Any types declared as dependencies of your addon will be made 
 available via the dependency injection model. Service wiring occurs automatically.
 
  public class ConsumerY {
-    @Inject private ServiceX service;
+    @Inject private ServiceX service; // From some other Addon
  }
 
 Observable container events::
@@ -62,6 +60,10 @@ Observable container events::
 
 |===
 
+
+Automatic event propagation::
+ This container will automatically re-fire any CDI events for all other addons to observe. It also
+ automatically listens for remote events and re-fires them for your local beans to observe.
 
 Injection of Furnace APIs:: This container also allows for injection of some of the core Furnace APIs into your
 objects. Below is a list of all injectable API types.

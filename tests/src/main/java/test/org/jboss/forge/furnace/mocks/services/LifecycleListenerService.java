@@ -7,12 +7,10 @@ import javax.inject.Singleton;
 
 import org.jboss.forge.furnace.event.PostStartup;
 import org.jboss.forge.furnace.event.PreShutdown;
-import org.jboss.forge.furnace.services.Exported;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
-@Exported
 @Singleton
 public class LifecycleListenerService
 {

@@ -13,7 +13,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import test.org.jboss.forge.furnace.mocks.event.EventPayload2;
+import test.org.jboss.forge.furnace.mocks.event.EventPayload1;
+import test.org.jboss.forge.furnace.mocks.event.EventPayload3;
 import test.org.jboss.forge.furnace.mocks.event.EventResponseService;
 import test.org.jboss.forge.furnace.mocks.event.EventService;
 
@@ -21,9 +22,9 @@ import test.org.jboss.forge.furnace.mocks.event.EventService;
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
 @RunWith(Arquillian.class)
-public class AddonEventPropagationNonRemoteTest
+public class AddonEventPropagationFromOriginTest
 {
-   @Deployment(order = 2)
+   @Deployment(order = 1)
    @Dependencies({
             @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
    })
@@ -31,7 +32,7 @@ public class AddonEventPropagationNonRemoteTest
    {
       ForgeArchive archive = ShrinkWrap
                .create(ForgeArchive.class)
-               .addClasses(EventService.class)
+               .addClasses(EventService.class, EventPayload1.class)
                .addBeansXML()
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
@@ -41,13 +42,13 @@ public class AddonEventPropagationNonRemoteTest
       return archive;
    }
 
-   @Deployment(name = "dependency,1", testable = false, order = 1)
+   @Deployment(name = "dependency,1", testable = false, order = 2)
    public static ForgeArchive getDependencyDeployment()
    {
       ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class, "dependency.jar")
-               .addClasses(EventResponseService.class, EventPayload2.class)
+               .addClasses(EventResponseService.class, EventPayload3.class)
                .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi", false)
                )
                .addBeansXML();
 
@@ -58,14 +59,14 @@ public class AddonEventPropagationNonRemoteTest
    private EventService sender;
 
    @Test
-   public void testNonRemoteEventPropagationDoesNotCrossContainers() throws Exception
+   public void testEventPropagationAcrossContainers() throws Exception
    {
       Assert.assertFalse(sender.isLocalRequestRecieved());
       Assert.assertFalse(sender.isWrongResponseRecieved());
       Assert.assertFalse(sender.isRemoteResponseRecieved());
-      sender.fireNonRemote();
+      sender.firePayload1();
       Assert.assertTrue(sender.isLocalRequestRecieved());
-      Assert.assertFalse(sender.isRemoteResponseRecieved());
+      Assert.assertTrue(sender.isRemoteResponseRecieved());
       Assert.assertFalse(sender.isWrongResponseRecieved());
    }
 

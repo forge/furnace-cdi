@@ -23,9 +23,7 @@ import org.jboss.forge.furnace.container.cdi.impl.AddonProducer;
 import org.jboss.forge.furnace.container.cdi.util.BeanManagerUtils;
 import org.jboss.forge.furnace.event.EventManager;
 import org.jboss.forge.furnace.exception.ContainerException;
-import org.jboss.forge.furnace.services.Exported;
 import org.jboss.forge.furnace.util.AddonFilters;
-import org.jboss.forge.furnace.util.Annotations;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
@@ -42,7 +40,7 @@ public class CrossContainerObserverMethod
          initStack();
 
          Addon self = BeanManagerUtils.getContextualInstance(manager, AddonProducer.class).produceCurrentAddon();
-         if (self != null && Annotations.isAnnotationPresent(event.getClass(), Exported.class))
+         if (self != null && !(event instanceof InboundEvent))
          {
             Set<Annotation> qualifiers = metadata.getQualifiers();
             if (!onStack(event, qualifiers))
@@ -78,6 +76,10 @@ public class CrossContainerObserverMethod
             {
                pop((InboundEvent) event);
             }
+         }
+         else
+         {
+            System.out.println("Another scenario");
          }
       }
       finally

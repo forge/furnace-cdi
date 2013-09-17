@@ -10,6 +10,7 @@ import org.jboss.forge.furnace.container.cdi.events.EventManagerProducer;
 import org.jboss.forge.furnace.container.cdi.impl.AddonProducer;
 import org.jboss.forge.furnace.container.cdi.impl.AddonRegistryProducer;
 import org.jboss.forge.furnace.container.cdi.impl.AddonRepositoryProducer;
+import org.jboss.forge.furnace.container.cdi.impl.ContainerBeanRegistrant;
 import org.jboss.forge.furnace.container.cdi.impl.ContainerServiceExtension;
 import org.jboss.forge.furnace.container.cdi.impl.FurnaceProducer;
 import org.jboss.forge.furnace.container.cdi.impl.ServiceRegistryImpl;
@@ -38,12 +39,14 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
    private BeanManager manager;
    private ModularWeld weld;
    private EventManagerImpl eventManager;
+   private Addon container;
 
    @Override
-   public void initialize(Furnace furnace, AddonRegistry registry, Addon self)
+   public void initialize(Furnace furnace, AddonRegistry registry, Addon container)
    {
       this.furnace = furnace;
       this.addonRegistry = registry;
+      this.container = container;
    }
 
    @Override
@@ -55,7 +58,11 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 
       if (!scanResult.getDiscoveredResourceUrls().isEmpty())
       {
+         ContainerServiceExtension extension = new ContainerServiceExtension(container, addon);
+
          weld = new ModularWeld(scanResult);
+         weld.addExtension(extension);
+         weld.addExtension(new ContainerBeanRegistrant());
          WeldContainer container = weld.initialize();
 
          manager = container.getBeanManager();
@@ -74,9 +81,6 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
          AddonRegistryProducer addonRegistryProducer = BeanManagerUtils.getContextualInstance(manager,
                   AddonRegistryProducer.class);
          addonRegistryProducer.setRegistry(addonRegistry);
-
-         ContainerServiceExtension extension = BeanManagerUtils.getContextualInstance(manager,
-                  ContainerServiceExtension.class);
 
          ServiceRegistryProducer serviceRegistryProducer = BeanManagerUtils.getContextualInstance(manager,
                   ServiceRegistryProducer.class);

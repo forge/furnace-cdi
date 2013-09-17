@@ -2,9 +2,6 @@ package test.org.jboss.forge.furnace.mocks.services;
 
 import javax.inject.Inject;
 
-import org.jboss.forge.furnace.services.Exported;
-
-@Exported
 public class ConsumingService
 {
    @Inject

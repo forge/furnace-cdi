@@ -36,6 +36,7 @@ import javax.enterprise.inject.spi.ProcessAnnotatedType;
 import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.ProcessProducer;
 
+import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.container.cdi.services.ExportedInstanceInjectionPoint;
 import org.jboss.forge.furnace.container.cdi.services.ExportedInstanceLazyLoader;
@@ -44,8 +45,7 @@ import org.jboss.forge.furnace.container.cdi.util.BeanManagerUtils;
 import org.jboss.forge.furnace.container.cdi.util.ContextualLifecycle;
 import org.jboss.forge.furnace.container.cdi.util.Types;
 import org.jboss.forge.furnace.exception.ContainerException;
-import org.jboss.forge.furnace.services.Exported;
-import org.jboss.forge.furnace.util.Annotations;
+import org.jboss.forge.furnace.util.ClassLoaders;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> *
@@ -58,18 +58,32 @@ public class ContainerServiceExtension implements Extension
    private Map<InjectionPoint, Class<?>> requestedServices = new HashMap<InjectionPoint, Class<?>>();
    private Map<InjectionPoint, ServiceLiteral> requestedServiceLiterals = new HashMap<InjectionPoint, ServiceLiteral>();
 
-   public void processRemotes(@Observes ProcessAnnotatedType<?> event) throws InstantiationException,
+   private Addon container;
+   private Addon addon;
+
+   public ContainerServiceExtension()
+   {
+      // For proxying.
+   }
+
+   public ContainerServiceExtension(Addon container, Addon addon)
+   {
+      this.container = container;
+      this.addon = addon;
+   }
+
+   public void processRemoteServiceTypes(@Observes ProcessAnnotatedType<?> event) throws InstantiationException,
             IllegalAccessException
    {
       Class<?> type = event.getAnnotatedType().getJavaClass();
-      if (Annotations.isAnnotationPresent(type, Exported.class)
+      if (addon.getClassLoader().equals(type.getClassLoader())
+               && !container.getClassLoader().equals(type.getClassLoader())
                && !(Modifier.isAbstract(type.getModifiers())
                || Modifier.isInterface(type.getModifiers())))
       {
-         if (type.getClassLoader().equals(Thread.currentThread().getContextClassLoader()))
-         {
-            services.put(event.getAnnotatedType().getJavaClass(), event.getAnnotatedType());
-         }
+         services.put(event.getAnnotatedType().getJavaClass(), event.getAnnotatedType());
+         logger.fine("Addon [" + addon + "] requires service type [" + type.getName() + "] in ClassLoader ["
+                  + type.getClassLoader() + "]");
       }
    }
 
@@ -96,22 +110,13 @@ public class ContainerServiceExtension implements Extension
          }
       }
 
-      Exported exported = getExported(injectionBeanValueType);
-
-      boolean local = isConsumerLocal(injectionPointConsumingType, injectionBeanValueType);
-      if (!local)
+      if (!isBeanConsumerLocal(injectionPointConsumingType, injectionBeanValueType)
+               && !ClassLoaders.containsClass(container.getClassLoader(), injectionBeanValueType))
       {
-         if (exported != null)
-         {
-            ServiceLiteral serviceLiteral = new ServiceLiteral();
-            event.setInjectionPoint(new ExportedInstanceInjectionPoint(event.getInjectionPoint(), serviceLiteral));
-            requestedServices.put(event.getInjectionPoint(), injectionBeanValueType);
-            requestedServiceLiterals.put(event.getInjectionPoint(), serviceLiteral);
-         }
-      }
-      else if (exported != null)
-      {
-         logger.fine("Not @Exported type " + annotated);
+         ServiceLiteral serviceLiteral = new ServiceLiteral();
+         event.setInjectionPoint(new ExportedInstanceInjectionPoint(event.getInjectionPoint(), serviceLiteral));
+         requestedServices.put(event.getInjectionPoint(), injectionBeanValueType);
+         requestedServiceLiterals.put(event.getInjectionPoint(), serviceLiteral);
       }
    }
 
@@ -119,12 +124,10 @@ public class ContainerServiceExtension implements Extension
    {
       Class<?> type = Types.toClass(event.getAnnotatedMember().getJavaMember());
       ClassLoader classLoader = type.getClassLoader();
-      if (classLoader != null && classLoader.equals(Thread.currentThread().getContextClassLoader()))
+      if (classLoader != null && addon.getClassLoader().equals(classLoader))
       {
-         if (Annotations.isAnnotationPresent(type, Exported.class))
-         {
-            services.put(type, manager.createAnnotatedType(type));
-         }
+         // I am not sure what this is doing anymore.
+         services.put(type, manager.createAnnotatedType(type));
       }
    }
 
@@ -272,17 +275,12 @@ public class ContainerServiceExtension implements Extension
       return services.keySet();
    }
 
-   private boolean isConsumerLocal(Class<?> reference, Class<?> type)
+   private boolean isBeanConsumerLocal(Class<?> reference, Class<?> type)
    {
       ClassLoader referenceLoader = reference.getClassLoader();
       ClassLoader typeLoader = type.getClassLoader();
       if (referenceLoader != null && referenceLoader.equals(typeLoader))
          return true;
       return false;
-   }
-
-   private Exported getExported(Class<?> clazz)
-   {
-      return Annotations.getAnnotation(clazz, Exported.class);
    }
 }

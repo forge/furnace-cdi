@@ -32,7 +32,6 @@ import test.org.jboss.forge.furnace.mocks.ServiceInterface;
  * @author <a href="ggastald@redhat.com">George Gastaldi</a>
  */
 @RunWith(Arquillian.class)
-@org.junit.Ignore("FORGE-1206")
 public class AddonRegistryTest
 {
    @Deployment
@@ -55,13 +54,14 @@ public class AddonRegistryTest
    private AddonRegistry addonRegistry;
 
    @Test
-   public void testAddonRegistryShouldNotReturnServicesWithExportedAnnotation() throws Exception
+   public void testAddonRegistryShouldReturnServicesWithoutExportedAnnotation() throws Exception
    {
       Imported<PlainInterface> services = addonRegistry.getServices(PlainInterface.class);
       Assert.assertTrue(services.isSatisfied());
       Assert.assertFalse(services.isAmbiguous());
-      Assert.assertFalse(services.iterator().hasNext());
-      Assert.assertNull(services.get());
+      Assert.assertTrue(services.iterator().hasNext());
+      Assert.assertNotNull(services.iterator().next());
+      Assert.assertNotNull(services.get());
    }
 
    @Test
@@ -70,8 +70,9 @@ public class AddonRegistryTest
       Imported<ServiceInterface> services = addonRegistry.getServices(ServiceInterface.class);
       Assert.assertTrue(services.isSatisfied());
       Assert.assertFalse(services.isAmbiguous());
-      Assert.assertTrue(services.iterator().hasNext());
       Assert.assertNotNull(services.get());
+      Assert.assertNotNull(services.iterator().next());
+      Assert.assertTrue(services.iterator().hasNext());
    }
 
 }
