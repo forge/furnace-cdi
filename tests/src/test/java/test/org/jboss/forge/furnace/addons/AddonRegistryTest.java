@@ -24,6 +24,8 @@ import org.junit.runner.RunWith;
 
 import test.org.jboss.forge.furnace.mocks.PlainBean;
 import test.org.jboss.forge.furnace.mocks.PlainInterface;
+import test.org.jboss.forge.furnace.mocks.PlainQualifier;
+import test.org.jboss.forge.furnace.mocks.QualifiedPlainBean;
 import test.org.jboss.forge.furnace.mocks.ServiceBean;
 import test.org.jboss.forge.furnace.mocks.ServiceInterface;
 
@@ -41,7 +43,8 @@ public class AddonRegistryTest
    public static ForgeArchive getDeployment()
    {
       ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-               .addClasses(PlainInterface.class, PlainBean.class, ServiceInterface.class, ServiceBean.class)
+               .addClasses(PlainInterface.class, PlainBean.class,
+                        PlainQualifier.class, QualifiedPlainBean.class, ServiceInterface.class, ServiceBean.class)
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                )
@@ -54,18 +57,7 @@ public class AddonRegistryTest
    private AddonRegistry addonRegistry;
 
    @Test
-   public void testAddonRegistryShouldReturnServicesWithoutExportedAnnotation() throws Exception
-   {
-      Imported<PlainInterface> services = addonRegistry.getServices(PlainInterface.class);
-      Assert.assertFalse(services.isUnsatisfied());
-      Assert.assertFalse(services.isAmbiguous());
-      Assert.assertTrue(services.iterator().hasNext());
-      Assert.assertNotNull(services.iterator().next());
-      Assert.assertNotNull(services.get());
-   }
-
-   @Test
-   public void testAddonRegistryShouldReturnImportedWithExportedAnnotation() throws Exception
+   public void testImported() throws Exception
    {
       Imported<ServiceInterface> services = addonRegistry.getServices(ServiceInterface.class);
       Assert.assertFalse(services.isUnsatisfied());
@@ -75,4 +67,13 @@ public class AddonRegistryTest
       Assert.assertTrue(services.iterator().hasNext());
    }
 
+   @Test
+   public void testImportedWithQualifiers() throws Exception
+   {
+      Imported<PlainInterface> services = addonRegistry.getServices(PlainInterface.class);
+      Assert.assertTrue(services.isAmbiguous());
+      Assert.assertFalse(services.isUnsatisfied());
+      Assert.assertTrue(services.iterator().hasNext());
+      Assert.assertNotNull(services.iterator().next());
+   }
 }

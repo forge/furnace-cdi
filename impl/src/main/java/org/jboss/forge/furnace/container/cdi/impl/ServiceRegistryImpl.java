@@ -117,7 +117,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
             }
 
             ExportedInstance<T> result = null;
-            Set<Bean<?>> beans = manager.getBeans(requestedLoadedType);
+            Set<Bean<?>> beans = manager.getBeans(requestedLoadedType, getQualifiersFrom(requestedLoadedType));            
             if (!beans.isEmpty())
             {
                result = new ExportedInstanceImpl<T>(
