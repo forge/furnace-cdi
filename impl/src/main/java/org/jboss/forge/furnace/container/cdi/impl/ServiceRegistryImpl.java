@@ -47,7 +47,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
       }
    }
 
-   public <T> void addService(Class<T> clazz)
+   private <T> void addService(Class<T> clazz)
    {
       services.add(clazz);
    }
@@ -228,7 +228,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
    @Override
    public Set<Class<?>> getExportedTypes()
    {
-      return services;
+      return Collections.unmodifiableSet(services);
    }
 
    @Override
