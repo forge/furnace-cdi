@@ -85,7 +85,7 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 
          ServiceRegistryProducer serviceRegistryProducer = BeanManagerUtils.getContextualInstance(manager,
                   ServiceRegistryProducer.class);
-         serviceRegistry = new ServiceRegistryImpl(furnace.getLockManager(), addon, manager, extension);
+         serviceRegistry = new ServiceRegistryImpl(furnace.getLockManager(), addon, manager, extension.getServices());
          serviceRegistryProducer.setServiceRegistry(serviceRegistry);
          Assert.notNull(BeanManagerUtils.getContextualInstance(manager, ServiceRegistry.class),
                   "InboundEvent registry was null.");

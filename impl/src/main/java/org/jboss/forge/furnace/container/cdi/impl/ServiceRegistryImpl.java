@@ -3,6 +3,7 @@ package org.jboss.forge.furnace.container.cdi.impl;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -20,36 +21,29 @@ import org.jboss.forge.furnace.spi.ExportedInstance;
 import org.jboss.forge.furnace.spi.ServiceRegistry;
 import org.jboss.forge.furnace.util.Addons;
 import org.jboss.forge.furnace.util.Assert;
-import org.jboss.forge.furnace.util.Sets;
 
 public class ServiceRegistryImpl implements ServiceRegistry
 {
-   private Set<Class<?>> services = Sets.getConcurrentSet();
+   private final Set<Class<?>> services;
 
-   private BeanManager manager;
+   private final BeanManager manager;
 
-   private Addon addon;
+   private final Addon addon;
 
-   private Logger log = Logger.getLogger(getClass().getName());
+   private static final Logger log = Logger.getLogger(ServiceRegistryImpl.class.getName());
 
-   private LockManager lock;
+   private final LockManager lock;
 
    public ServiceRegistryImpl(LockManager lock, Addon addon, BeanManager manager,
-            ContainerServiceExtension extension)
+            Set<Class<?>> services)
    {
       this.lock = lock;
       this.addon = addon;
       this.manager = manager;
-
-      for (Class<?> clazz : extension.getServices())
-      {
-         addService(clazz);
-      }
-   }
-
-   private <T> void addService(Class<T> clazz)
-   {
-      services.add(clazz);
+      // Copy set to avoid any reference pointers
+      Set<Class<?>> copy = new LinkedHashSet<Class<?>>();
+      copy.addAll(services);
+      this.services = Collections.unmodifiableSet(copy);
    }
 
    @Override
@@ -117,7 +111,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
             }
 
             ExportedInstance<T> result = null;
-            Set<Bean<?>> beans = manager.getBeans(requestedLoadedType, getQualifiersFrom(requestedLoadedType));            
+            Set<Bean<?>> beans = manager.getBeans(requestedLoadedType, getQualifiersFrom(requestedLoadedType));
             if (!beans.isEmpty())
             {
                result = new ExportedInstanceImpl<T>(
@@ -228,7 +222,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
    @Override
    public Set<Class<?>> getExportedTypes()
    {
-      return Collections.unmodifiableSet(services);
+      return services;
    }
 
    @Override
