@@ -1,10 +1,14 @@
 package org.jboss.forge.furnace.container.cdi.impl;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -24,7 +28,7 @@ import org.jboss.forge.furnace.util.Assert;
 
 public class ServiceRegistryImpl implements ServiceRegistry
 {
-   private final Set<Class<?>> services;
+   private final Class<?>[] services;
 
    private final BeanManager manager;
 
@@ -33,6 +37,12 @@ public class ServiceRegistryImpl implements ServiceRegistry
    private static final Logger log = Logger.getLogger(ServiceRegistryImpl.class.getName());
 
    private final LockManager lock;
+
+   private Set<Class<?>> servicesSet;
+
+   private ClassLoader addonClassLoader;
+
+   private Map<String, Class<?>> classCache = new WeakHashMap<String, Class<?>>();
 
    public ServiceRegistryImpl(LockManager lock, Addon addon, BeanManager manager,
             Set<Class<?>> services)
@@ -43,7 +53,11 @@ public class ServiceRegistryImpl implements ServiceRegistry
       // Copy set to avoid any reference pointers
       Set<Class<?>> copy = new LinkedHashSet<Class<?>>();
       copy.addAll(services);
-      this.services = Collections.unmodifiableSet(copy);
+      this.services = new ArrayList<Class<?>>(copy).toArray(new Class<?>[copy.size()]);
+      this.servicesSet = Collections.unmodifiableSet(new LinkedHashSet<Class<?>>(Arrays.asList(this.services)));
+
+      // Extracted for performance optimization
+      this.addonClassLoader = addon.getClassLoader();
    }
 
    @Override
@@ -197,8 +211,9 @@ public class ServiceRegistryImpl implements ServiceRegistry
          return result;
       }
 
-      for (Class<?> type : services)
+      for (int i = 0; i < services.length; i++)
       {
+         Class<?> type = services[i];
          if (requestedLoadedType.isAssignableFrom(type))
          {
             Set<Bean<?>> beans = manager.getBeans(type, getQualifiersFrom(type));
@@ -222,7 +237,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
    @Override
    public Set<Class<?>> getExportedTypes()
    {
-      return services;
+      return servicesSet;
    }
 
    @Override
@@ -239,13 +254,13 @@ public class ServiceRegistryImpl implements ServiceRegistry
    }
 
    /**
-    * Ensures that the returned class is loaded from the {@link Addon}
+    * Ensures that the returned class is loaded from this {@link Addon}
     */
    @SuppressWarnings("unchecked")
    private <T> Class<T> loadAddonClass(Class<T> actualType) throws ClassNotFoundException
    {
       final Class<T> type;
-      if (actualType.getClassLoader() == addon.getClassLoader())
+      if (actualType.getClassLoader() == addonClassLoader)
       {
          type = actualType;
       }
@@ -258,7 +273,16 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    private Class<?> loadAddonClass(String className) throws ClassNotFoundException
    {
-      return Class.forName(className, true, addon.getClassLoader());
+      Class<?> cached = classCache.get(className);
+      if (cached == null)
+      {
+         Class<?> result = Class.forName(className, false, addonClassLoader);
+         // potentially not thread-safe
+         classCache.put(className, result);
+         cached = result;
+      }
+
+      return cached;
    }
 
    @Override
