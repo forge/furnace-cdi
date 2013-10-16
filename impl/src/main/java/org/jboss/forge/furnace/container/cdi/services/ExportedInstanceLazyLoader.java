@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import javax.enterprise.inject.spi.InjectionPoint;
 
 import org.jboss.forge.furnace.addons.Addon;
+import org.jboss.forge.furnace.addons.AddonFilter;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.proxy.ForgeProxy;
 import org.jboss.forge.furnace.proxy.Proxies;
@@ -16,6 +17,7 @@ import org.jboss.forge.furnace.util.ClassLoaders;
 
 public class ExportedInstanceLazyLoader implements ForgeProxy
 {
+   private static final AddonFilter ALL_STARTED = AddonFilters.allStarted();
    private final Class<?> serviceType;
    private final AddonRegistry registry;
    private final InjectionPoint injectionPoint;
@@ -70,7 +72,7 @@ public class ExportedInstanceLazyLoader implements ForgeProxy
    private Object loadObject() throws Exception
    {
       Object result = null;
-      for (Addon addon : registry.getAddons(AddonFilters.allStarted()))
+      for (Addon addon : registry.getAddons(ALL_STARTED))
       {
          if (ClassLoaders.containsClass(addon.getClassLoader(), serviceType))
          {

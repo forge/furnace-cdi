@@ -36,7 +36,23 @@ public class ImportedProducer
          ParameterizedType parameterizedType = (ParameterizedType) type;
 
          Type[] typeArguments = parameterizedType.getActualTypeArguments();
-         Class<T> importedType = (Class<T>) typeArguments[0];
+         Class<T> importedType = null;
+         Type argument = typeArguments[0];
+         if (argument instanceof Class)
+         {
+            importedType = (Class<T>) argument;
+         }
+         else if (argument instanceof ParameterizedType)
+         {
+            Type rawType = ((ParameterizedType) argument).getRawType();
+            if (rawType instanceof Class)
+               importedType = (Class<T>) rawType;
+         }
+         else
+         {
+            throw new IllegalStateException("Cannot inject a generic instance of type " + Imported.class.getName()
+                     + "<?> without specifying concrete generic types at injection point " + injectionPoint + ".");
+         }
          return registry.getServices(importedType);
       }
       else

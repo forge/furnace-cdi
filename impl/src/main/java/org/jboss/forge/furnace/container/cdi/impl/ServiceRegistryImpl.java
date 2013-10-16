@@ -9,8 +9,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Bean;
@@ -20,7 +18,6 @@ import javax.inject.Qualifier;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.container.cdi.services.ExportedInstanceImpl;
 import org.jboss.forge.furnace.lock.LockManager;
-import org.jboss.forge.furnace.lock.LockMode;
 import org.jboss.forge.furnace.spi.ExportedInstance;
 import org.jboss.forge.furnace.spi.ServiceRegistry;
 import org.jboss.forge.furnace.util.Addons;
@@ -42,7 +39,9 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    private ClassLoader addonClassLoader;
 
-   private Map<String, Class<?>> classCache = new WeakHashMap<String, Class<?>>();
+   private Map<Integer, Class<?>> classCache = new WeakHashMap<Integer, Class<?>>();
+   private Map<Integer, ExportedInstance<?>> instanceCache = new WeakHashMap<Integer, ExportedInstance<?>>();
+   private Map<Integer, Set<ExportedInstance<?>>> instancesCache = new WeakHashMap<Integer, Set<ExportedInstance<?>>>();
 
    public ServiceRegistryImpl(LockManager lock, Addon addon, BeanManager manager,
             Set<Class<?>> services)
@@ -68,7 +67,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
       try
       {
          type = (Class<T>) loadAddonClass(clazz);
-         return getExportedInstance(type, type);
+         return getExportedInstance(type);
       }
       catch (ClassNotFoundException e)
       {
@@ -77,68 +76,40 @@ public class ServiceRegistryImpl implements ServiceRegistry
    }
 
    @Override
-   public <T> ExportedInstance<T> getExportedInstance(Class<T> clazz)
-   {
-      return getExportedInstance(clazz, clazz);
-   }
-
-   /**
-    * @param requestedType interface
-    * @param actualType Implementation
-    * @return
-    */
    @SuppressWarnings("unchecked")
-   private <T> ExportedInstance<T> getExportedInstance(final Class<T> requestedType, final Class<T> actualType)
+   public <T> ExportedInstance<T> getExportedInstance(final Class<T> requestedType)
    {
       Assert.notNull(requestedType, "Requested Class type may not be null");
-      Assert.notNull(actualType, "Actual Class type may not be null");
       Addons.waitUntilStarted(addon);
-      return lock.performLocked(LockMode.READ, new Callable<ExportedInstance<T>>()
+
+      ExportedInstance<T> result = (ExportedInstance<T>) instanceCache.get(requestedType.hashCode());
+      if (result == null)
       {
-         @Override
-         public ExportedInstance<T> call() throws Exception
+         final Class<T> actualLoadedType;
+         try
          {
-            /*
-             * Double checked waiting, with timeout to prevent complete deadlocks.
-             */
-            Addons.waitUntilStarted(addon, 10, TimeUnit.SECONDS);
-            final Class<T> requestedLoadedType;
-            final Class<? extends T> actualLoadedType;
-            try
-            {
-               requestedLoadedType = loadAddonClass(requestedType);
-            }
-            catch (ClassNotFoundException cnfe)
-            {
-               log.fine("Class " + requestedType.getName() + " is not present in this addon [" + addon + "]");
-               return null;
-            }
-
-            try
-            {
-               actualLoadedType = loadAddonClass(actualType);
-            }
-            catch (ClassNotFoundException cnfe)
-            {
-               log.fine("Class " + actualType.getName() + " is not present in this addon [" + addon + "]");
-               return null;
-            }
-
-            ExportedInstance<T> result = null;
-            Set<Bean<?>> beans = manager.getBeans(requestedLoadedType, getQualifiersFrom(requestedLoadedType));
-            if (!beans.isEmpty())
-            {
-               result = new ExportedInstanceImpl<T>(
-                        addon,
-                        manager, (Bean<T>)
-                        manager.resolve(beans),
-                        requestedLoadedType,
-                        actualLoadedType
-                        );
-            }
-            return result;
+            actualLoadedType = loadAddonClass(requestedType);
          }
-      });
+         catch (ClassNotFoundException cnfe)
+         {
+            log.fine("Class " + requestedType.getName() + " is not present in this addon [" + addon + "]");
+            return null;
+         }
+
+         Set<Bean<?>> beans = manager.getBeans(actualLoadedType, getQualifiersFrom(actualLoadedType));
+         if (!beans.isEmpty())
+         {
+            result = new ExportedInstanceImpl<T>(
+                     addon,
+                     manager, (Bean<T>)
+                     manager.resolve(beans),
+                     actualLoadedType,
+                     actualLoadedType
+                     );
+            instanceCache.put(requestedType.hashCode(), result);
+         }
+      }
+      return result;
    }
 
    @Override
@@ -193,12 +164,11 @@ public class ServiceRegistryImpl implements ServiceRegistry
       }
    }
 
-   @SuppressWarnings("unchecked")
    @Override
+   @SuppressWarnings({ "unchecked", "rawtypes" })
    public <T> Set<ExportedInstance<T>> getExportedInstances(Class<T> requestedType)
    {
       Addons.waitUntilStarted(addon);
-      Set<ExportedInstance<T>> result = new HashSet<ExportedInstance<T>>();
 
       Class<T> requestedLoadedType;
       try
@@ -208,27 +178,34 @@ public class ServiceRegistryImpl implements ServiceRegistry
       catch (ClassNotFoundException e)
       {
          log.fine("Class " + requestedType.getName() + " is not present in this addon [" + addon + "]");
-         return result;
+         return Collections.emptySet();
       }
 
-      for (int i = 0; i < services.length; i++)
-      {
-         Class<?> type = services[i];
-         if (requestedLoadedType.isAssignableFrom(type))
-         {
-            Set<Bean<?>> beans = manager.getBeans(type, getQualifiersFrom(type));
-            Class<? extends T> assignableClass = (Class<? extends T>) type;
-            for (Bean<?> bean : beans)
-            {
-               result.add(new ExportedInstanceImpl<T>(
-                        addon,
-                        manager,
-                        (Bean<T>) bean,
-                        requestedLoadedType,
-                        assignableClass
-                        ));
+      Set<ExportedInstance<T>> result = (Set) instancesCache.get(requestedLoadedType.hashCode());
 
+      if (result == null)
+      {
+         result = new HashSet<ExportedInstance<T>>();
+         for (int i = 0; i < services.length; i++)
+         {
+            Class<?> type = services[i];
+            if (requestedLoadedType.isAssignableFrom(type))
+            {
+               Set<Bean<?>> beans = manager.getBeans(type, getQualifiersFrom(type));
+               Class<? extends T> assignableClass = (Class<? extends T>) type;
+               for (Bean<?> bean : beans)
+               {
+                  result.add(new ExportedInstanceImpl<T>(
+                           addon,
+                           manager,
+                           (Bean<T>) bean,
+                           requestedLoadedType,
+                           assignableClass
+                           ));
+
+               }
             }
+            instancesCache.put(requestedLoadedType.hashCode(), (Set) result);
          }
       }
       return result;
@@ -273,12 +250,12 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    private Class<?> loadAddonClass(String className) throws ClassNotFoundException
    {
-      Class<?> cached = classCache.get(className);
+      Class<?> cached = classCache.get(className.hashCode());
       if (cached == null)
       {
          Class<?> result = Class.forName(className, false, addonClassLoader);
          // potentially not thread-safe
-         classCache.put(className, result);
+         classCache.put(className.hashCode(), result);
          cached = result;
       }
 
