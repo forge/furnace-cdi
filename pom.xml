@@ -37,6 +37,9 @@
    </modules>
 
    <properties>
+      <maven.compiler.target>1.6</maven.compiler.target>
+      <maven.compiler.source>1.6</maven.compiler.source>
+      
       <forge.scm.connection>scm:git:git://github.com/forge/furnace-cdi.git</forge.scm.connection>
       <forge.developer.connection>scm:git:git@github.com:forge/furnace-cdi.git</forge.developer.connection>
       <forge.scm.url>http://github.com/forge/furnace-cdi</forge.scm.url>
@@ -154,16 +157,6 @@
 
    <build>
       <plugins>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <inherited>true</inherited>
-            <configuration>
-               <source>1.6</source>
-               <target>1.6</target>
-               <encoding>UTF-8</encoding>
-            </configuration>
-         </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-jar-plugin</artifactId>
