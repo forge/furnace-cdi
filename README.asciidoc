@@ -16,8 +16,8 @@ This Addon requires the following installation steps.
 To use this Furnace container, you must add it as a dependency in the *pom.xml* of your `forge-addon` classified artifact:
 
       <dependency>
-         <groupId>org.jboss.forge.furnace</groupId>
-         <artifactId>container-cdi</artifactId>
+         <groupId>org.jboss.forge.furnace.container</groupId>
+         <artifactId>cdi</artifactId>
          <classifier>forge-addon</classifier>
          <version>${version}</version>
       </dependency>
