@@ -99,7 +99,7 @@ public class ExportedInstanceLazyLoader implements ForgeProxy
 
       if (result == null)
       {
-         throw new IllegalStateException("Remote service [" + serviceType.getName() + "] is not registered.");
+         throw new IllegalStateException("Addon service [" + serviceType.getName() + "] is not registered.");
       }
 
       return result;
