@@ -31,8 +31,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * FIXME This test needs to be refactored to be a bit less brittle. It breaks when addon POMs change.
- * 
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
 @RunWith(Arquillian.class)
