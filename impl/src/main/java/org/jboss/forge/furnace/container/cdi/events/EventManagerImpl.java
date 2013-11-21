@@ -7,12 +7,14 @@
 package org.jboss.forge.furnace.container.cdi.events;
 
 import java.lang.annotation.Annotation;
+import java.util.concurrent.Callable;
 
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.event.EventException;
 import org.jboss.forge.furnace.event.EventManager;
+import org.jboss.forge.furnace.util.ClassLoaders;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
@@ -20,8 +22,8 @@ import org.jboss.forge.furnace.event.EventManager;
  */
 public class EventManagerImpl implements EventManager
 {
-   private Addon addon;
-   private BeanManager manager;
+   private final Addon addon;
+   private final BeanManager manager;
 
    public EventManagerImpl(Addon addon, BeanManager manager)
    {
@@ -30,13 +32,21 @@ public class EventManagerImpl implements EventManager
    }
 
    @Override
-   public void fireEvent(Object event, Annotation... qualifiers) throws EventException
+   public void fireEvent(final Object event, final Annotation... qualifiers) throws EventException
    {
       try
       {
-         manager.fireEvent(new InboundEvent(event, qualifiers));
+         ClassLoaders.executeIn(addon.getClassLoader(), new Callable<Void>()
+         {
+            @Override
+            public Void call() throws Exception
+            {
+               manager.fireEvent(new InboundEvent(event, qualifiers));
+               return null;
+            }
+         });
       }
-      catch (Throwable e)
+      catch (Exception e)
       {
          throw new EventException("Could not propagate event to addon [" + addon + "]", e);
       }

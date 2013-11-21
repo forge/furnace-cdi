@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Bean;
@@ -17,11 +18,13 @@ import javax.inject.Qualifier;
 
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.container.cdi.services.ExportedInstanceImpl;
+import org.jboss.forge.furnace.exception.ContainerException;
 import org.jboss.forge.furnace.lock.LockManager;
 import org.jboss.forge.furnace.spi.ExportedInstance;
 import org.jboss.forge.furnace.spi.ServiceRegistry;
 import org.jboss.forge.furnace.util.Addons;
 import org.jboss.forge.furnace.util.Assert;
+import org.jboss.forge.furnace.util.ClassLoaders;
 
 public class ServiceRegistryImpl implements ServiceRegistry
 {
@@ -33,15 +36,16 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    private static final Logger log = Logger.getLogger(ServiceRegistryImpl.class.getName());
 
+   @SuppressWarnings("unused")
    private final LockManager lock;
 
-   private Set<Class<?>> servicesSet;
+   private final Set<Class<?>> servicesSet;
 
-   private ClassLoader addonClassLoader;
+   private final ClassLoader addonClassLoader;
 
-   private Map<Integer, Class<?>> classCache = new WeakHashMap<Integer, Class<?>>();
-   private Map<Integer, ExportedInstance<?>> instanceCache = new WeakHashMap<Integer, ExportedInstance<?>>();
-   private Map<Integer, Set<ExportedInstance<?>>> instancesCache = new WeakHashMap<Integer, Set<ExportedInstance<?>>>();
+   private final Map<Integer, Class<?>> classCache = new WeakHashMap<Integer, Class<?>>();
+   private final Map<Integer, ExportedInstance<?>> instanceCache = new WeakHashMap<Integer, ExportedInstance<?>>();
+   private final Map<Integer, Set<ExportedInstance<?>>> instancesCache = new WeakHashMap<Integer, Set<ExportedInstance<?>>>();
 
    public ServiceRegistryImpl(LockManager lock, Addon addon, BeanManager manager,
             Set<Class<?>> services)
@@ -96,18 +100,36 @@ public class ServiceRegistryImpl implements ServiceRegistry
             return null;
          }
 
-         Set<Bean<?>> beans = manager.getBeans(actualLoadedType, getQualifiersFrom(actualLoadedType));
-         if (!beans.isEmpty())
+         try
          {
-            result = new ExportedInstanceImpl<T>(
-                     addon,
-                     manager, (Bean<T>)
-                     manager.resolve(beans),
-                     actualLoadedType,
-                     actualLoadedType
-                     );
-            instanceCache.put(requestedType.hashCode(), result);
+            result = ClassLoaders.executeIn(addon.getClassLoader(), new Callable<ExportedInstance<T>>()
+            {
+               @Override
+               public ExportedInstance<T> call() throws Exception
+               {
+                  Set<Bean<?>> beans = manager.getBeans(actualLoadedType, getQualifiersFrom(actualLoadedType));
+                  if (!beans.isEmpty())
+                  {
+                     ExportedInstance<T> result = new ExportedInstanceImpl<T>(
+                              addon,
+                              manager, (Bean<T>)
+                              manager.resolve(beans),
+                              actualLoadedType,
+                              actualLoadedType
+                              );
+                     instanceCache.put(requestedType.hashCode(), result);
+                     return result;
+                  }
+                  return null;
+               }
+            });
          }
+         catch (Exception e)
+         {
+            throw new ContainerException("Could not get service of type [" + requestedType + "] from addon [" + addon
+                     + "]", e);
+         }
+
       }
       return result;
    }
@@ -170,7 +192,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
    {
       Addons.waitUntilStarted(addon);
 
-      Class<T> requestedLoadedType;
+      final Class<T> requestedLoadedType;
       try
       {
          requestedLoadedType = loadAddonClass(requestedType);
@@ -188,22 +210,40 @@ public class ServiceRegistryImpl implements ServiceRegistry
          result = new HashSet<ExportedInstance<T>>();
          for (int i = 0; i < services.length; i++)
          {
-            Class<?> type = services[i];
+            final Class<?> type = services[i];
             if (requestedLoadedType.isAssignableFrom(type))
             {
-               Set<Bean<?>> beans = manager.getBeans(type, getQualifiersFrom(type));
-               Class<? extends T> assignableClass = (Class<? extends T>) type;
-               for (Bean<?> bean : beans)
+               try
                {
-                  result.add(new ExportedInstanceImpl<T>(
-                           addon,
-                           manager,
-                           (Bean<T>) bean,
-                           requestedLoadedType,
-                           assignableClass
-                           ));
-
+                  result.addAll(ClassLoaders.executeIn(addon.getClassLoader(), new Callable<Set<ExportedInstance<T>>>()
+                  {
+                     @Override
+                     public Set<ExportedInstance<T>> call() throws Exception
+                     {
+                        Set<ExportedInstance<T>> result = new HashSet<ExportedInstance<T>>();
+                        Set<Bean<?>> beans = manager.getBeans(type, getQualifiersFrom(type));
+                        Class<? extends T> assignableClass = (Class<? extends T>) type;
+                        for (Bean<?> bean : beans)
+                        {
+                           result.add(new ExportedInstanceImpl<T>(
+                                    addon,
+                                    manager,
+                                    (Bean<T>) bean,
+                                    requestedLoadedType,
+                                    assignableClass
+                                    ));
+                        }
+                        return result;
+                     }
+                  }));
                }
+               catch (Exception e)
+               {
+                  throw new ContainerException("Could not get services of type [" + requestedType + "] from addon ["
+                           + addon
+                           + "]", e);
+               }
+
             }
             instancesCache.put(requestedLoadedType.hashCode(), (Set) result);
          }
