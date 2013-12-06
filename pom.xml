@@ -4,7 +4,7 @@
    <parent>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-parent</artifactId>
-      <version>11</version>
+      <version>12</version>
    </parent>
 
    <groupId>org.jboss.forge.furnace.container</groupId>
@@ -49,7 +49,6 @@
       <version.furnace>2.0.0-SNAPSHOT</version.furnace>
       <version.jboss.spec>3.0.2.Final</version.jboss.spec>
       <version.slf4j>1.7.2</version.slf4j>
-      <version.surefire.plugin>2.16</version.surefire.plugin>
       <version.weld>2.0.4.Final</version.weld>
       <version.junit>4.11</version.junit>
    </properties>
