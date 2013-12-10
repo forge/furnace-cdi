@@ -37,9 +37,6 @@
    </modules>
 
    <properties>
-      <maven.compiler.target>1.6</maven.compiler.target>
-      <maven.compiler.source>1.6</maven.compiler.source>
-      
       <forge.scm.connection>scm:git:git://github.com/forge/furnace-cdi.git</forge.scm.connection>
       <forge.developer.connection>scm:git:git@github.com:forge/furnace-cdi.git</forge.developer.connection>
       <forge.scm.url>http://github.com/forge/furnace-cdi</forge.scm.url>
