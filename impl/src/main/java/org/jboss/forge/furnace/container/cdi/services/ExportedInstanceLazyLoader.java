@@ -45,7 +45,10 @@ public class ExportedInstanceLazyLoader implements ForgeProxy
          if (thisMethod.getDeclaringClass().getName().equals(ForgeProxy.class.getName()))
          {
             // Must call from "this." or method call is not properly processed by this class.
-            return this.getDelegate();
+            if (thisMethod.getName().equals("getDelegate"))
+               return this.getDelegate();
+            else if (thisMethod.getName().equals("getHandler"))
+               return this.getHandler();
          }
       }
       catch (Exception e)
@@ -112,6 +115,12 @@ public class ExportedInstanceLazyLoader implements ForgeProxy
       if (delegate == null)
          delegate = loadObject();
       return delegate;
+   }
+
+   @Override
+   public Object getHandler() throws Exception
+   {
+      return this;
    }
 
 }
