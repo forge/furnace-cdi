@@ -41,11 +41,9 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    private final Set<Class<?>> servicesSet;
 
-   private final ClassLoader addonClassLoader;
-
-   private final Map<Integer, Class<?>> classCache = new WeakHashMap<Integer, Class<?>>();
-   private final Map<Integer, ExportedInstance<?>> instanceCache = new WeakHashMap<Integer, ExportedInstance<?>>();
-   private final Map<Integer, Set<ExportedInstance<?>>> instancesCache = new WeakHashMap<Integer, Set<ExportedInstance<?>>>();
+   private final Map<Integer, Class<?>> classCache = new WeakHashMap<>();
+   private final Map<Integer, ExportedInstance<?>> instanceCache = new WeakHashMap<>();
+   private final Map<Integer, Set<ExportedInstance<?>>> instancesCache = new WeakHashMap<>();
 
    public ServiceRegistryImpl(LockManager lock, Addon addon, BeanManager manager,
             Set<Class<?>> services)
@@ -54,13 +52,10 @@ public class ServiceRegistryImpl implements ServiceRegistry
       this.addon = addon;
       this.manager = manager;
       // Copy set to avoid any reference pointers
-      Set<Class<?>> copy = new LinkedHashSet<Class<?>>();
+      Set<Class<?>> copy = new LinkedHashSet<>();
       copy.addAll(services);
-      this.services = new ArrayList<Class<?>>(copy).toArray(new Class<?>[copy.size()]);
-      this.servicesSet = Collections.unmodifiableSet(new LinkedHashSet<Class<?>>(Arrays.asList(this.services)));
-
-      // Extracted for performance optimization
-      this.addonClassLoader = addon.getClassLoader();
+      this.services = new ArrayList<>(copy).toArray(new Class<?>[copy.size()]);
+      this.servicesSet = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(this.services)));
    }
 
    @Override
@@ -110,7 +105,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
                   Set<Bean<?>> beans = manager.getBeans(actualLoadedType, getQualifiersFrom(actualLoadedType));
                   if (!beans.isEmpty())
                   {
-                     ExportedInstance<T> result = new ExportedInstanceImpl<T>(
+                     ExportedInstance<T> result = new ExportedInstanceImpl<>(
                               addon,
                               manager, (Bean<T>)
                               manager.resolve(beans),
@@ -207,7 +202,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
       if (result == null)
       {
-         result = new HashSet<ExportedInstance<T>>();
+         result = new HashSet<>();
          for (int i = 0; i < services.length; i++)
          {
             final Class<?> type = services[i];
@@ -220,12 +215,12 @@ public class ServiceRegistryImpl implements ServiceRegistry
                      @Override
                      public Set<ExportedInstance<T>> call() throws Exception
                      {
-                        Set<ExportedInstance<T>> result = new HashSet<ExportedInstance<T>>();
+                        Set<ExportedInstance<T>> result = new HashSet<>();
                         Set<Bean<?>> beans = manager.getBeans(type, getQualifiersFrom(type));
                         Class<? extends T> assignableClass = (Class<? extends T>) type;
                         for (Bean<?> bean : beans)
                         {
-                           result.add(new ExportedInstanceImpl<T>(
+                           result.add(new ExportedInstanceImpl<>(
                                     addon,
                                     manager,
                                     (Bean<T>) bean,
@@ -261,7 +256,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
    @SuppressWarnings("unchecked")
    public <T> Set<Class<T>> getExportedTypes(Class<T> type)
    {
-      Set<Class<T>> result = new HashSet<Class<T>>();
+      Set<Class<T>> result = new HashSet<>();
       for (Class<?> serviceType : services)
       {
          if (type.isAssignableFrom(serviceType))
@@ -276,8 +271,12 @@ public class ServiceRegistryImpl implements ServiceRegistry
    @SuppressWarnings("unchecked")
    private <T> Class<T> loadAddonClass(Class<T> actualType) throws ClassNotFoundException
    {
+      /*
+       * FIXME The need for this method defeats the entire purpose of a true module system. This needs to be fixed by
+       * the CLAC.
+       */
       final Class<T> type;
-      if (actualType.getClassLoader() == addonClassLoader)
+      if (actualType.getClassLoader() == addon.getClassLoader())
       {
          type = actualType;
       }
@@ -293,7 +292,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
       Class<?> cached = classCache.get(className.hashCode());
       if (cached == null)
       {
-         Class<?> result = Class.forName(className, false, addonClassLoader);
+         Class<?> result = Class.forName(className, false, addon.getClassLoader());
          // potentially not thread-safe
          classCache.put(className.hashCode(), result);
          cached = result;
@@ -313,7 +312,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
     */
    public static Annotation[] getQualifiersFrom(final Class<?> c)
    {
-      Set<Annotation> annotations = new HashSet<Annotation>();
+      Set<Annotation> annotations = new HashSet<>();
       for (Annotation annotation : c.getAnnotations())
       {
          if (annotation.annotationType().isAnnotationPresent(Qualifier.class))
