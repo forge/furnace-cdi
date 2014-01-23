@@ -76,22 +76,22 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    @Override
    @SuppressWarnings("unchecked")
-   public <T> ExportedInstance<T> getExportedInstance(final Class<T> requestedType)
+   public <T> ExportedInstance<T> getExportedInstance(final Class<T> clazz)
    {
-      Assert.notNull(requestedType, "Requested Class type may not be null");
+      Assert.notNull(clazz, "Requested Class type may not be null");
       Addons.waitUntilStarted(addon);
 
-      ExportedInstance<T> result = (ExportedInstance<T>) instanceCache.get(requestedType.hashCode());
+      ExportedInstance<T> result = (ExportedInstance<T>) instanceCache.get(clazz.hashCode());
       if (result == null)
       {
          final Class<T> actualLoadedType;
          try
          {
-            actualLoadedType = loadAddonClass(requestedType);
+            actualLoadedType = loadAddonClass(clazz);
          }
          catch (ClassNotFoundException cnfe)
          {
-            log.fine("Class " + requestedType.getName() + " is not present in this addon [" + addon + "]");
+            log.fine("Class " + clazz.getName() + " is not present in this addon [" + addon + "]");
             return null;
          }
 
@@ -112,7 +112,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
                               actualLoadedType,
                               actualLoadedType
                               );
-                     instanceCache.put(requestedType.hashCode(), result);
+                     instanceCache.put(clazz.hashCode(), result);
                      return result;
                   }
                   return null;
@@ -121,7 +121,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
          }
          catch (Exception e)
          {
-            throw new ContainerException("Could not get service of type [" + requestedType + "] from addon [" + addon
+            throw new ContainerException("Could not get service of type [" + clazz + "] from addon [" + addon
                      + "]", e);
          }
 
@@ -183,22 +183,22 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    @Override
    @SuppressWarnings({ "unchecked", "rawtypes" })
-   public <T> Set<ExportedInstance<T>> getExportedInstances(Class<T> requestedType)
+   public <T> Set<ExportedInstance<T>> getExportedInstances(Class<T> clazz)
    {
       Addons.waitUntilStarted(addon);
 
-      final Class<T> requestedLoadedType;
+      final Class<T> actualLoadedType;
       try
       {
-         requestedLoadedType = loadAddonClass(requestedType);
+         actualLoadedType = loadAddonClass(clazz);
       }
       catch (ClassNotFoundException e)
       {
-         log.fine("Class " + requestedType.getName() + " is not present in this addon [" + addon + "]");
+         log.fine("Class " + clazz.getName() + " is not present in this addon [" + addon + "]");
          return Collections.emptySet();
       }
 
-      Set<ExportedInstance<T>> result = (Set) instancesCache.get(requestedLoadedType.hashCode());
+      Set<ExportedInstance<T>> result = (Set) instancesCache.get(actualLoadedType.hashCode());
 
       if (result == null)
       {
@@ -206,7 +206,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
          for (int i = 0; i < services.length; i++)
          {
             final Class<?> type = services[i];
-            if (requestedLoadedType.isAssignableFrom(type))
+            if (actualLoadedType.isAssignableFrom(type))
             {
                try
                {
@@ -224,7 +224,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
                                     addon,
                                     manager,
                                     (Bean<T>) bean,
-                                    requestedLoadedType,
+                                    actualLoadedType,
                                     assignableClass
                                     ));
                         }
@@ -234,13 +234,13 @@ public class ServiceRegistryImpl implements ServiceRegistry
                }
                catch (Exception e)
                {
-                  throw new ContainerException("Could not get services of type [" + requestedType + "] from addon ["
+                  throw new ContainerException("Could not get services of type [" + clazz + "] from addon ["
                            + addon
                            + "]", e);
                }
 
             }
-            instancesCache.put(requestedLoadedType.hashCode(), (Set) result);
+            instancesCache.put(actualLoadedType.hashCode(), (Set) result);
          }
       }
       return result;
