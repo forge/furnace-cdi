@@ -20,6 +20,11 @@
                <groupId>javax.annotation</groupId>
                <artifactId>jsr250-api</artifactId>
             </exclusion>
+            <!-- Excluding EL -->
+            <exclusion>
+               <artifactId>el-api</artifactId>
+               <groupId>javax.el</groupId>
+            </exclusion>
          </exclusions>
       </dependency>
       <dependency>
