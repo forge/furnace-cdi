@@ -7,6 +7,11 @@
 
 package test.org.jboss.forge.furnace.addons;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+
+import java.util.Iterator;
+
 import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -22,7 +27,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import test.org.jboss.forge.furnace.mocks.BB;
 import test.org.jboss.forge.furnace.mocks.PlainBean;
+import test.org.jboss.forge.furnace.mocks.Aa;
 import test.org.jboss.forge.furnace.mocks.PlainInterface;
 import test.org.jboss.forge.furnace.mocks.PlainQualifier;
 import test.org.jboss.forge.furnace.mocks.QualifiedPlainBean;
@@ -42,9 +49,11 @@ public class AddonRegistryTest
    })
    public static ForgeArchive getDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      ForgeArchive archive = ShrinkWrap
+               .create(ForgeArchive.class)
                .addClasses(PlainInterface.class, PlainBean.class,
-                        PlainQualifier.class, QualifiedPlainBean.class, ServiceInterface.class, ServiceBean.class)
+                        PlainQualifier.class, QualifiedPlainBean.class, ServiceInterface.class, ServiceBean.class,
+                        Aa.class, BB.class)
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                )
@@ -76,4 +85,25 @@ public class AddonRegistryTest
       Assert.assertTrue(services.iterator().hasNext());
       Assert.assertNotNull(services.iterator().next());
    }
+
+   @Test
+   public void testImportedWithExpectedObjectsSameClassLoader() throws Exception
+   {
+      Imported<Aa> services = addonRegistry.getServices(Aa.class);
+      Assert.assertFalse(services.isUnsatisfied());
+      Assert.assertFalse(services.isAmbiguous());
+      Iterator<Aa> iterator = services.iterator();
+      Assert.assertTrue(iterator.hasNext());
+      Assert.assertThat(iterator.next(), is(instanceOf(Aa.class)));
+      Assert.assertFalse(iterator.hasNext());
+
+      Imported<BB> services2 = addonRegistry.getServices(BB.class);
+      Assert.assertFalse(services2.isUnsatisfied());
+      Assert.assertFalse(services2.isAmbiguous());
+      Iterator<BB> iterator2 = services2.iterator();
+      Assert.assertTrue(iterator2.hasNext());
+      Assert.assertThat(iterator2.next(), is(instanceOf(BB.class)));
+      Assert.assertFalse(iterator2.hasNext());
+   }
+
 }
