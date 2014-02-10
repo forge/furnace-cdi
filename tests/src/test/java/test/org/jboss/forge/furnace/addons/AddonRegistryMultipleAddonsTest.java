@@ -24,6 +24,7 @@ import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.services.Imported;
+import org.jboss.forge.furnace.spi.ServiceRegistry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
 import org.junit.Test;
@@ -88,7 +89,7 @@ public class AddonRegistryMultipleAddonsTest
    private AddonRegistry addonRegistry;
 
    @Test
-   public void testServiceContainedWithExpectedObjectsDifferentClassLoaders() throws Exception
+   public void testServiceWithExpectedObjectsDifferentClassLoaders() throws Exception
    {
       AddonId depOneId = AddonId.from("test:dep1", "1");
       AddonId depTwoId = AddonId.from("test:dep2", "2");
@@ -96,16 +97,20 @@ public class AddonRegistryMultipleAddonsTest
       Addon depOne = addonRegistry.getAddon(depOneId);
       Addon depTwo = addonRegistry.getAddon(depTwoId);
 
-      Assert.assertTrue(depOne.getServiceRegistry().hasService(Aa.class));
-      Assert.assertFalse(depOne.getServiceRegistry().hasService(BB.class));
+      ServiceRegistry depOneServiceRegistry = depOne.getServiceRegistry();
+      ServiceRegistry depTwoServiceRegistry = depTwo.getServiceRegistry();
 
-      Assert.assertFalse(depTwo.getServiceRegistry().hasService(Aa.class));
-      Assert.assertTrue(depTwo.getServiceRegistry().hasService(BB.class));
-   }
+      Assert.assertTrue(depOneServiceRegistry.hasService(Aa.class));
+      Assert.assertFalse(depOneServiceRegistry.hasService(BB.class));
+      Assert.assertFalse(depTwoServiceRegistry.hasService(Aa.class));
+      Assert.assertTrue(depTwoServiceRegistry.hasService(BB.class));
 
-   @Test
-   public void testImportedWithExpectedObjectsDifferentClassLoaders() throws Exception
-   {
+      Assert.assertNull(depOneServiceRegistry.getExportedInstance(BB.class.getName()));
+      Assert.assertNull(depTwoServiceRegistry.getExportedInstance(Aa.class.getName()));
+
+      Assert.assertNotNull(depOneServiceRegistry.getExportedInstance(Aa.class.getName()));
+      Assert.assertNotNull(depTwoServiceRegistry.getExportedInstance(BB.class.getName()));
+
       Imported<Aa> services = addonRegistry.getServices(Aa.class);
       Assert.assertFalse("Imported<Aa> should have been satisfied", services.isUnsatisfied());
       Assert.assertFalse("Imported<Aa> should not have been ambiguous", services.isAmbiguous());
