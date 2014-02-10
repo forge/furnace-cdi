@@ -18,7 +18,6 @@ import org.jboss.forge.arquillian.archive.ForgeArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -27,8 +26,6 @@ import test.org.jboss.forge.furnace.mocks.ServiceInterface;
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
-// FIXME
-@Ignore("For some reason this works only sporadically")
 @RunWith(Arquillian.class)
 public class ExportedServicesMissingTest
 {
