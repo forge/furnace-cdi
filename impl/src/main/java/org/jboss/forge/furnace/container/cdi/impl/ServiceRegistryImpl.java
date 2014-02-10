@@ -41,9 +41,9 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    private final Set<Class<?>> servicesSet;
 
-   private final Map<Integer, Class<?>> classCache = new WeakHashMap<>();
-   private final Map<Integer, ExportedInstance<?>> instanceCache = new WeakHashMap<>();
-   private final Map<Integer, Set<ExportedInstance<?>>> instancesCache = new WeakHashMap<>();
+   private final Map<String, Class<?>> classCache = new WeakHashMap<>();
+   private final Map<String, ExportedInstance<?>> instanceCache = new WeakHashMap<>();
+   private final Map<String, Set<ExportedInstance<?>>> instancesCache = new WeakHashMap<>();
 
    public ServiceRegistryImpl(LockManager lock, Addon addon, BeanManager manager,
             Set<Class<?>> services)
@@ -81,7 +81,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
       Assert.notNull(clazz, "Requested Class type may not be null");
       Addons.waitUntilStarted(addon);
 
-      ExportedInstance<T> result = (ExportedInstance<T>) instanceCache.get(clazz.hashCode());
+      ExportedInstance<T> result = (ExportedInstance<T>) instanceCache.get(clazz.getName());
       if (result == null)
       {
          final Class<T> actualLoadedType;
@@ -112,7 +112,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
                               actualLoadedType,
                               actualLoadedType
                               );
-                     instanceCache.put(clazz.hashCode(), result);
+                     instanceCache.put(clazz.getName(), result);
                      return result;
                   }
                   return null;
@@ -198,7 +198,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
          return Collections.emptySet();
       }
 
-      Set<ExportedInstance<T>> result = (Set) instancesCache.get(actualLoadedType.hashCode());
+      Set<ExportedInstance<T>> result = (Set) instancesCache.get(actualLoadedType.getName());
 
       if (result == null)
       {
@@ -240,7 +240,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
                }
 
             }
-            instancesCache.put(actualLoadedType.hashCode(), (Set) result);
+            instancesCache.put(actualLoadedType.getName(), (Set) result);
          }
       }
       return result;
@@ -289,12 +289,12 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    private Class<?> loadAddonClass(String className) throws ClassNotFoundException
    {
-      Class<?> cached = classCache.get(className.hashCode());
+      Class<?> cached = classCache.get(className);
       if (cached == null)
       {
          Class<?> result = Class.forName(className, false, addon.getClassLoader());
          // potentially not thread-safe
-         classCache.put(className.hashCode(), result);
+         classCache.put(className, result);
          cached = result;
       }
 
