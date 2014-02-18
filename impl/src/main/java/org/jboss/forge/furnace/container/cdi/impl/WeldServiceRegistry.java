@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.Callable;
-import java.util.logging.Logger;
 
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -26,26 +25,23 @@ import org.jboss.forge.furnace.util.Addons;
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.furnace.util.ClassLoaders;
 
-public class ServiceRegistryImpl implements ServiceRegistry
+public class WeldServiceRegistry implements ServiceRegistry
 {
-   private final Class<?>[] services;
+   private final Class<?>[] serviceTypes;
 
    private final BeanManager manager;
 
    private final Addon addon;
-
-   private static final Logger log = Logger.getLogger(ServiceRegistryImpl.class.getName());
 
    @SuppressWarnings("unused")
    private final LockManager lock;
 
    private final Set<Class<?>> servicesSet;
 
-   private final Map<String, Class<?>> classCache = new WeakHashMap<>();
    private final Map<String, ExportedInstance<?>> instanceCache = new WeakHashMap<>();
    private final Map<String, Set<ExportedInstance<?>>> instancesCache = new WeakHashMap<>();
 
-   public ServiceRegistryImpl(LockManager lock, Addon addon, BeanManager manager,
+   public WeldServiceRegistry(LockManager lock, Addon addon, BeanManager manager,
             Set<Class<?>> services)
    {
       this.lock = lock;
@@ -54,19 +50,17 @@ public class ServiceRegistryImpl implements ServiceRegistry
       // Copy set to avoid any reference pointers
       Set<Class<?>> copy = new LinkedHashSet<>();
       copy.addAll(services);
-      this.services = new ArrayList<>(copy).toArray(new Class<?>[copy.size()]);
-      this.servicesSet = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(this.services)));
+      this.serviceTypes = new ArrayList<>(copy).toArray(new Class<?>[copy.size()]);
+      this.servicesSet = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(this.serviceTypes)));
    }
 
    @Override
    @SuppressWarnings("unchecked")
    public <T> ExportedInstance<T> getExportedInstance(String clazz)
    {
-      Class<T> type;
       try
       {
-         type = (Class<T>) loadAddonClass(clazz);
-         return getExportedInstance(type);
+         return getExportedInstance((Class<T>) Class.forName(clazz, false, addon.getClassLoader()));
       }
       catch (ClassNotFoundException e)
       {
@@ -84,17 +78,6 @@ public class ServiceRegistryImpl implements ServiceRegistry
       ExportedInstance<T> result = (ExportedInstance<T>) instanceCache.get(clazz.getName());
       if (result == null)
       {
-         final Class<T> actualLoadedType;
-         try
-         {
-            actualLoadedType = loadAddonClass(clazz);
-         }
-         catch (ClassNotFoundException cnfe)
-         {
-            log.fine("Class " + clazz.getName() + " is not present in this addon [" + addon + "]");
-            return null;
-         }
-
          try
          {
             result = ClassLoaders.executeIn(addon.getClassLoader(), new Callable<ExportedInstance<T>>()
@@ -102,15 +85,15 @@ public class ServiceRegistryImpl implements ServiceRegistry
                @Override
                public ExportedInstance<T> call() throws Exception
                {
-                  Set<Bean<?>> beans = manager.getBeans(actualLoadedType, getQualifiersFrom(actualLoadedType));
+                  Set<Bean<?>> beans = manager.getBeans(clazz, getQualifiersFrom(clazz));
                   if (!beans.isEmpty())
                   {
                      ExportedInstance<T> result = new ExportedInstanceImpl<>(
                               addon,
                               manager, (Bean<T>)
                               manager.resolve(beans),
-                              actualLoadedType,
-                              actualLoadedType
+                              clazz,
+                              clazz
                               );
                      instanceCache.put(clazz.getName(), result);
                      return result;
@@ -134,8 +117,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
    {
       try
       {
-         Class<?> type = loadAddonClass(clazz);
-         return hasService(type);
+         return hasService(Class.forName(clazz, false, addon.getClassLoader()));
       }
       catch (ClassNotFoundException e)
       {
@@ -147,18 +129,9 @@ public class ServiceRegistryImpl implements ServiceRegistry
    public boolean hasService(Class<?> clazz)
    {
       Addons.waitUntilStarted(addon);
-      Class<?> type;
-      try
+      for (Class<?> service : serviceTypes)
       {
-         type = loadAddonClass(clazz);
-      }
-      catch (ClassNotFoundException e)
-      {
-         return false;
-      }
-      for (Class<?> service : services)
-      {
-         if (type.isAssignableFrom(service))
+         if (clazz.isAssignableFrom(service))
          {
             return true;
          }
@@ -172,8 +145,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
    {
       try
       {
-         Class<T> type = (Class<T>) loadAddonClass(clazz);
-         return getExportedInstances(type);
+         return getExportedInstances((Class<T>) Class.forName(clazz, false, addon.getClassLoader()));
       }
       catch (ClassNotFoundException e)
       {
@@ -183,30 +155,19 @@ public class ServiceRegistryImpl implements ServiceRegistry
 
    @Override
    @SuppressWarnings({ "unchecked", "rawtypes" })
-   public <T> Set<ExportedInstance<T>> getExportedInstances(Class<T> clazz)
+   public <T> Set<ExportedInstance<T>> getExportedInstances(final Class<T> clazz)
    {
       Addons.waitUntilStarted(addon);
 
-      final Class<T> actualLoadedType;
-      try
-      {
-         actualLoadedType = loadAddonClass(clazz);
-      }
-      catch (ClassNotFoundException e)
-      {
-         log.fine("Class " + clazz.getName() + " is not present in this addon [" + addon + "]");
-         return Collections.emptySet();
-      }
-
-      Set<ExportedInstance<T>> result = (Set) instancesCache.get(actualLoadedType.getName());
+      Set<ExportedInstance<T>> result = (Set) instancesCache.get(clazz.getName());
 
       if (result == null)
       {
          result = new HashSet<>();
-         for (int i = 0; i < services.length; i++)
+         for (int i = 0; i < serviceTypes.length; i++)
          {
-            final Class<?> type = services[i];
-            if (actualLoadedType.isAssignableFrom(type))
+            final Class<?> type = serviceTypes[i];
+            if (clazz.isAssignableFrom(type))
             {
                try
                {
@@ -224,7 +185,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
                                     addon,
                                     manager,
                                     (Bean<T>) bean,
-                                    actualLoadedType,
+                                    clazz,
                                     assignableClass
                                     ));
                         }
@@ -240,7 +201,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
                }
 
             }
-            instancesCache.put(actualLoadedType.getName(), (Set) result);
+            instancesCache.put(clazz.getName(), (Set) result);
          }
       }
       return result;
@@ -257,7 +218,7 @@ public class ServiceRegistryImpl implements ServiceRegistry
    public <T> Set<Class<T>> getExportedTypes(Class<T> type)
    {
       Set<Class<T>> result = new HashSet<>();
-      for (Class<?> serviceType : services)
+      for (Class<?> serviceType : serviceTypes)
       {
          if (type.isAssignableFrom(serviceType))
             result.add((Class<T>) serviceType);
@@ -265,46 +226,10 @@ public class ServiceRegistryImpl implements ServiceRegistry
       return result;
    }
 
-   /**
-    * Ensures that the returned class is loaded from this {@link Addon}
-    */
-   @SuppressWarnings("unchecked")
-   private <T> Class<T> loadAddonClass(Class<T> actualType) throws ClassNotFoundException
-   {
-      /*
-       * FIXME The need for this method defeats the entire purpose of a true module system. This needs to be fixed by
-       * the CLAC.
-       */
-      final Class<T> type;
-      if (actualType.getClassLoader() == addon.getClassLoader())
-      {
-         type = actualType;
-      }
-      else
-      {
-         type = (Class<T>) loadAddonClass(actualType.getName());
-      }
-      return type;
-   }
-
-   private Class<?> loadAddonClass(String className) throws ClassNotFoundException
-   {
-      Class<?> cached = classCache.get(className);
-      if (cached == null)
-      {
-         Class<?> result = Class.forName(className, false, addon.getClassLoader());
-         // potentially not thread-safe
-         classCache.put(className, result);
-         cached = result;
-      }
-
-      return cached;
-   }
-
    @Override
    public String toString()
    {
-      return services.toString();
+      return serviceTypes.toString();
    }
 
    /**

@@ -14,7 +14,7 @@ import org.jboss.forge.furnace.container.cdi.impl.AddonRepositoryProducer;
 import org.jboss.forge.furnace.container.cdi.impl.ContainerBeanRegistrant;
 import org.jboss.forge.furnace.container.cdi.impl.ContainerServiceExtension;
 import org.jboss.forge.furnace.container.cdi.impl.FurnaceProducer;
-import org.jboss.forge.furnace.container.cdi.impl.ServiceRegistryImpl;
+import org.jboss.forge.furnace.container.cdi.impl.WeldServiceRegistry;
 import org.jboss.forge.furnace.container.cdi.impl.ServiceRegistryProducer;
 import org.jboss.forge.furnace.container.cdi.util.BeanManagerUtils;
 import org.jboss.forge.furnace.container.cdi.weld.AddonResourceLoader;
@@ -85,7 +85,7 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 
          ServiceRegistryProducer serviceRegistryProducer = BeanManagerUtils.getContextualInstance(manager,
                   ServiceRegistryProducer.class);
-         serviceRegistry = new ServiceRegistryImpl(furnace.getLockManager(), addon, manager, extension.getServices());
+         serviceRegistry = new WeldServiceRegistry(furnace.getLockManager(), addon, manager, extension.getServices());
          serviceRegistryProducer.setServiceRegistry(serviceRegistry);
          Assert.notNull(BeanManagerUtils.getContextualInstance(manager, ServiceRegistry.class),
                   "InboundEvent registry was null.");
