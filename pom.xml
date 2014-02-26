@@ -43,7 +43,7 @@
       <!-- This version is bound to the Weld version -->
       <version.annotations>1.0.0.Alpha1</version.annotations>
       <version.cdi>1.1</version.cdi>
-      <version.furnace>2.0.1-SNAPSHOT</version.furnace>
+      <version.furnace>2.1.0.Final</version.furnace>
       <version.jboss.spec>3.0.2.Final</version.jboss.spec>
       <version.slf4j>1.7.2</version.slf4j>
       <version.weld>2.0.4.Final</version.weld>
@@ -166,6 +166,19 @@
                </archive>
                <forceCreation>true</forceCreation>
             </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-release-plugin</artifactId>
+            <version>2.4.2</version>
+            <dependencies>
+               <dependency>
+                  <groupId>org.apache.maven.scm</groupId>
+                  <artifactId>maven-scm-provider-gitexe</artifactId>
+                  <!-- This version is necessary for use with git version 1.8.5 -->
+                  <version>1.8.1</version>
+               </dependency>
+            </dependencies>
          </plugin>
       </plugins>
 
