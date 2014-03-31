@@ -38,13 +38,17 @@ import javax.enterprise.inject.spi.ProcessProducer;
 
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
+import org.jboss.forge.furnace.container.cdi.services.ExportedInstanceImpl;
 import org.jboss.forge.furnace.container.cdi.services.ExportedInstanceInjectionPoint;
-import org.jboss.forge.furnace.container.cdi.services.ExportedInstanceLazyLoader;
+import org.jboss.forge.furnace.container.cdi.services.LocalServiceInjectionPoint;
 import org.jboss.forge.furnace.container.cdi.util.BeanBuilder;
 import org.jboss.forge.furnace.container.cdi.util.BeanManagerUtils;
 import org.jboss.forge.furnace.container.cdi.util.ContextualLifecycle;
 import org.jboss.forge.furnace.container.cdi.util.Types;
 import org.jboss.forge.furnace.exception.ContainerException;
+import org.jboss.forge.furnace.spi.ExportedInstance;
+import org.jboss.forge.furnace.spi.ServiceRegistry;
+import org.jboss.forge.furnace.util.AddonFilters;
 import org.jboss.forge.furnace.util.ClassLoaders;
 
 /**
@@ -54,9 +58,9 @@ public class ContainerServiceExtension implements Extension
 {
    private static Logger logger = Logger.getLogger(ContainerServiceExtension.class.getName());
 
-   private Map<Class<?>, AnnotatedType<?>> services = new HashMap<Class<?>, AnnotatedType<?>>();
-   private Map<InjectionPoint, Class<?>> requestedServices = new HashMap<InjectionPoint, Class<?>>();
-   private Map<InjectionPoint, ServiceLiteral> requestedServiceLiterals = new HashMap<InjectionPoint, ServiceLiteral>();
+   private final Map<Class<?>, AnnotatedType<?>> services = new HashMap<>();
+   private final Map<InjectionPoint, Class<?>> requestedServices = new HashMap<>();
+   private final Map<InjectionPoint, ServiceLiteral> requestedServiceLiterals = new HashMap<>();
 
    private Addon container;
    private Addon addon;
@@ -142,13 +146,13 @@ public class ContainerServiceExtension implements Extension
 
          Class<?> beanClass = entry.getValue();
          Set<Type> typeClosure = annotated.getTypeClosure();
-         Set<Type> beanTypeClosure = new LinkedHashSet<Type>();
+         Set<Type> beanTypeClosure = new LinkedHashSet<>();
          for (Type type : typeClosure)
          {
             beanTypeClosure.add(reifyWildcardsToObjects(type));
          }
 
-         Bean<?> serviceBean = new BeanBuilder<Object>(manager)
+         Bean<?> serviceBean = new BeanBuilder<>(manager)
                   .beanClass(beanClass)
                   .types(beanTypeClosure)
                   .beanLifecycle(new ContextualLifecycle<Object>()
@@ -191,11 +195,44 @@ public class ContainerServiceExtension implements Extension
                                     "Cannot handle producer for non-Field and non-Method member type: " + member);
                         }
 
-                        return ExportedInstanceLazyLoader.create(
-                                 BeanManagerUtils.getContextualInstance(manager, AddonRegistry.class),
-                                 injectionPoint,
-                                 serviceType
-                                 );
+                        AddonRegistry registry = BeanManagerUtils.getContextualInstance(manager, AddonRegistry.class);
+
+                        Object result = null;
+                        for (Addon addon : registry.getAddons(AddonFilters.allStarted()))
+                        {
+                           if (ClassLoaders.containsClass(addon.getClassLoader(), serviceType))
+                           {
+                              ServiceRegistry serviceRegistry = addon.getServiceRegistry();
+                              if (serviceRegistry.hasService(serviceType))
+                              {
+                                 ExportedInstance<?> instance = serviceRegistry.getExportedInstance(serviceType);
+                                 if (instance != null)
+                                 {
+                                    if (instance instanceof ExportedInstanceImpl)
+                                    {
+                                       // FIXME remove the need for this implementation coupling
+                                       result = ((ExportedInstanceImpl<?>) instance)
+                                                .get(new LocalServiceInjectionPoint(injectionPoint, serviceType));
+                                    }
+                                    else
+                                    {
+                                       result = instance.get();
+                                    }
+
+                                    if (result != null)
+                                       break;
+                                 }
+                              }
+                           }
+                        }
+
+                        if (result == null)
+                        {
+                           throw new IllegalStateException("Addon service [" + serviceType.getName()
+                                    + "] is not registered.");
+                        }
+
+                        return result;
                      }
                   })
                   .qualifiers(requestedServiceLiterals.get(injectionPoint))
