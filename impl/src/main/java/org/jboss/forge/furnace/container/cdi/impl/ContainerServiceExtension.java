@@ -6,10 +6,7 @@
  */
 package org.jboss.forge.furnace.container.cdi.impl;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Member;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -21,12 +18,10 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.AfterBeanDiscovery;
 import javax.enterprise.inject.spi.Annotated;
-import javax.enterprise.inject.spi.AnnotatedParameter;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -37,18 +32,10 @@ import javax.enterprise.inject.spi.ProcessInjectionPoint;
 import javax.enterprise.inject.spi.ProcessProducer;
 
 import org.jboss.forge.furnace.addons.Addon;
-import org.jboss.forge.furnace.addons.AddonRegistry;
-import org.jboss.forge.furnace.container.cdi.services.ExportedInstanceImpl;
 import org.jboss.forge.furnace.container.cdi.services.ExportedInstanceInjectionPoint;
-import org.jboss.forge.furnace.container.cdi.services.LocalServiceInjectionPoint;
 import org.jboss.forge.furnace.container.cdi.util.BeanBuilder;
-import org.jboss.forge.furnace.container.cdi.util.BeanManagerUtils;
 import org.jboss.forge.furnace.container.cdi.util.ContextualLifecycle;
 import org.jboss.forge.furnace.container.cdi.util.Types;
-import org.jboss.forge.furnace.exception.ContainerException;
-import org.jboss.forge.furnace.spi.ExportedInstance;
-import org.jboss.forge.furnace.spi.ServiceRegistry;
-import org.jboss.forge.furnace.util.AddonFilters;
 import org.jboss.forge.furnace.util.ClassLoaders;
 
 /**
@@ -152,89 +139,12 @@ public class ContainerServiceExtension implements Extension
             beanTypeClosure.add(reifyWildcardsToObjects(type));
          }
 
+         ContextualLifecycle<Object> lifecycle = new ImportedBeanLifecycle(annotated, member, injectionPoint, manager);
+         
          Bean<?> serviceBean = new BeanBuilder<>(manager)
                   .beanClass(beanClass)
                   .types(beanTypeClosure)
-                  .beanLifecycle(new ContextualLifecycle<Object>()
-                  {
-                     @Override
-                     public void destroy(Bean<Object> bean, Object instance, CreationalContext<Object> creationalContext)
-                     {
-                        creationalContext.release();
-                     }
-
-                     @Override
-                     public Object create(Bean<Object> bean, CreationalContext<Object> creationalContext)
-                     {
-                        Class<?> serviceType = null;
-                        if (member instanceof Method)
-                        {
-                           if (annotated instanceof AnnotatedParameter)
-                           {
-                              serviceType = ((Method) member).getParameterTypes()[((AnnotatedParameter<?>) annotated)
-                                       .getPosition()];
-                           }
-                           else
-                              serviceType = ((Method) member).getReturnType();
-                        }
-                        else if (member instanceof Field)
-                        {
-                           serviceType = ((Field) member).getType();
-                        }
-                        else if (member instanceof Constructor)
-                        {
-                           if (annotated instanceof AnnotatedParameter)
-                           {
-                              serviceType = ((Constructor<?>) member).getParameterTypes()[((AnnotatedParameter<?>) annotated)
-                                       .getPosition()];
-                           }
-                        }
-                        else
-                        {
-                           throw new ContainerException(
-                                    "Cannot handle producer for non-Field and non-Method member type: " + member);
-                        }
-
-                        AddonRegistry registry = BeanManagerUtils.getContextualInstance(manager, AddonRegistry.class);
-
-                        Object result = null;
-                        for (Addon addon : registry.getAddons(AddonFilters.allStarted()))
-                        {
-                           if (ClassLoaders.containsClass(addon.getClassLoader(), serviceType))
-                           {
-                              ServiceRegistry serviceRegistry = addon.getServiceRegistry();
-                              if (serviceRegistry.hasService(serviceType))
-                              {
-                                 ExportedInstance<?> instance = serviceRegistry.getExportedInstance(serviceType);
-                                 if (instance != null)
-                                 {
-                                    if (instance instanceof ExportedInstanceImpl)
-                                    {
-                                       // FIXME remove the need for this implementation coupling
-                                       result = ((ExportedInstanceImpl<?>) instance)
-                                                .get(new LocalServiceInjectionPoint(injectionPoint, serviceType));
-                                    }
-                                    else
-                                    {
-                                       result = instance.get();
-                                    }
-
-                                    if (result != null)
-                                       break;
-                                 }
-                              }
-                           }
-                        }
-
-                        if (result == null)
-                        {
-                           throw new IllegalStateException("Addon service [" + serviceType.getName()
-                                    + "] is not registered.");
-                        }
-
-                        return result;
-                     }
-                  })
+                  .beanLifecycle(lifecycle)
                   .qualifiers(requestedServiceLiterals.get(injectionPoint))
                   .create();
 

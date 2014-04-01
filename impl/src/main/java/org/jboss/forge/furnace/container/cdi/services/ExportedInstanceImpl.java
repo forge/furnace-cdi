@@ -16,8 +16,6 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.container.cdi.impl.WeldServiceRegistry;
 import org.jboss.forge.furnace.exception.ContainerException;
-import org.jboss.forge.furnace.proxy.ClassLoaderInterceptor;
-import org.jboss.forge.furnace.proxy.Proxies;
 import org.jboss.forge.furnace.spi.ExportedInstance;
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.furnace.util.ClassLoaders;
@@ -25,13 +23,13 @@ import org.jboss.forge.furnace.util.ClassLoaders;
 public class ExportedInstanceImpl<R> implements ExportedInstance<R>
 {
 
-   private Addon addon;
-   private BeanManager manager;
+   private final Addon addon;
+   private final BeanManager manager;
    private CreationalContext<R> context;
 
-   private Bean<R> requestedBean;
-   private Class<R> requestedType;
-   private Class<? extends R> actualType;
+   private final Bean<R> requestedBean;
+   private final Class<R> requestedType;
+   private final Class<? extends R> actualType;
 
    public ExportedInstanceImpl(Addon addon, BeanManager manager, Bean<R> requestedBean, Class<R> requestedType,
             Class<? extends R> actualType)
@@ -59,8 +57,7 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
          {
             context = manager.createCreationalContext(requestedBean);
             Object delegate = manager.getReference(requestedBean, actualType, context);
-            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(),
-                     delegate));
+            return delegate;
          }
       };
 
@@ -101,8 +98,7 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
                      WeldServiceRegistry.getQualifiersFrom(actualType)));
             context = manager.createCreationalContext(bean);
             Object delegate = manager.getInjectableReference(injectionPoint, context);
-            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(),
-                     delegate));
+            return delegate;
          }
       };
 
