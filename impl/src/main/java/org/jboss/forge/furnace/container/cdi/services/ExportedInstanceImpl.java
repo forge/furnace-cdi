@@ -16,6 +16,8 @@ import javax.enterprise.inject.spi.InjectionPoint;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.container.cdi.impl.WeldServiceRegistry;
 import org.jboss.forge.furnace.exception.ContainerException;
+import org.jboss.forge.furnace.proxy.ClassLoaderInterceptor;
+import org.jboss.forge.furnace.proxy.Proxies;
 import org.jboss.forge.furnace.spi.ExportedInstance;
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.furnace.util.ClassLoaders;
@@ -57,7 +59,8 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
          {
             context = manager.createCreationalContext(requestedBean);
             Object delegate = manager.getReference(requestedBean, actualType, context);
-            return delegate;
+            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(),
+                     delegate));
          }
       };
 
@@ -98,7 +101,8 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
                      WeldServiceRegistry.getQualifiersFrom(actualType)));
             context = manager.createCreationalContext(bean);
             Object delegate = manager.getInjectableReference(injectionPoint, context);
-            return delegate;
+            return Proxies.enhance(addon.getClassLoader(), delegate, new ClassLoaderInterceptor(addon.getClassLoader(),
+                     delegate));
          }
       };
 
