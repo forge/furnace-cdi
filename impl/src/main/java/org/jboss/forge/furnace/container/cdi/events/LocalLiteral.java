@@ -13,6 +13,7 @@ import org.jboss.forge.furnace.container.cdi.events.Local;
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
+@SuppressWarnings("all")
 public class LocalLiteral implements Local
 {
    @Override

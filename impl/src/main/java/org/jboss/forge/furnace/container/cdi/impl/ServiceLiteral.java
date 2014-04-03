@@ -2,6 +2,7 @@ package org.jboss.forge.furnace.container.cdi.impl;
 
 import java.lang.annotation.Annotation;
 
+@SuppressWarnings("all")
 final class ServiceLiteral implements Service
 {
    private static int INSTANCE_COUNT = 0;
