@@ -161,7 +161,7 @@ public class WeldServiceRegistry implements ServiceRegistry
 
       Set<ExportedInstance<T>> result = (Set) instancesCache.get(clazz.getName());
 
-      if (result == null)
+      if (result == null || result.isEmpty())
       {
          result = new HashSet<>();
          for (int i = 0; i < serviceTypes.length; i++)
