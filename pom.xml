@@ -44,7 +44,7 @@
       <!-- This version is bound to the Weld version -->
       <version.annotations>1.0.0.Alpha1</version.annotations>
       <version.cdi>1.1</version.cdi>
-      <version.furnace>2.4.1.Final</version.furnace>
+      <version.furnace>${project.version}</version.furnace>
       <version.jboss.spec>3.0.2.Final</version.jboss.spec>
       <version.slf4j>1.7.2</version.slf4j>
       <version.weld>2.0.4.Final</version.weld>
