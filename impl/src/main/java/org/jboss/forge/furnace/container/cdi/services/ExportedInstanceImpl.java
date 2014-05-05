@@ -70,7 +70,7 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
       }
       catch (Exception e)
       {
-         throw new ContainerException("Failed to enhance instance of [" + actualType + "] with proxy for ClassLoader ["
+         throw new ContainerException("Failed to get instance of [" + actualType + "] with proxy for ClassLoader ["
                   + addon.getClassLoader() + "]", e);
       }
    }
