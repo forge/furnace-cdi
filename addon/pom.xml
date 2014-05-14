@@ -20,6 +20,7 @@
          <groupId>org.jboss.forge.furnace.container</groupId>
          <artifactId>cdi-impl</artifactId>
          <scope>runtime</scope>
+         <optional>true</optional>
       </dependency>
       <dependency>
          <groupId>org.jboss.forge.furnace</groupId>
