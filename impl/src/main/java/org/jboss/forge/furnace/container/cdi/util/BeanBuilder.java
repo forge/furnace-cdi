@@ -107,13 +107,13 @@ public class BeanBuilder<T>
       }
       else
       {
-         injectionTarget = new DummyInjectionTarget<T>();
+         injectionTarget = new DummyInjectionTarget<>();
       }
-      this.beanLifecycle = new DelegatingContextualLifecycle<T>(injectionTarget);
+      this.beanLifecycle = new DelegatingContextualLifecycle<>(injectionTarget);
       this.injectionPoints = injectionTarget.getInjectionPoints();
-      this.qualifiers = new HashSet<Annotation>();
-      this.stereotypes = new HashSet<Class<? extends Annotation>>();
-      this.types = new HashSet<Type>();
+      this.qualifiers = new HashSet<>();
+      this.stereotypes = new HashSet<>();
+      this.types = new HashSet<>();
       for (Annotation annotation : type.getAnnotations())
       {
          if (beanManager.isQualifier(annotation.annotationType()))
@@ -169,12 +169,12 @@ public class BeanBuilder<T>
    {
       if (!passivationCapable)
       {
-         return new ImmutableBean<T>(beanClass, name, qualifiers, scope, stereotypes, types, alternative, nullable,
+         return new ImmutableBean<>(beanClass, name, qualifiers, scope, stereotypes, types, alternative, nullable,
                   injectionPoints, toString, beanLifecycle);
       }
       else
       {
-         return new ImmutablePassivationCapableBean<T>(beanClass, name, qualifiers, scope, stereotypes, types,
+         return new ImmutablePassivationCapableBean<>(beanClass, name, qualifiers, scope, stereotypes, types,
                   alternative, nullable, injectionPoints, toString, beanLifecycle, id);
       }
    }
@@ -207,7 +207,7 @@ public class BeanBuilder<T>
     */
    public BeanBuilder<T> qualifiers(Annotation... qualifiers)
    {
-      this.qualifiers = new HashSet<Annotation>(Arrays.asList(qualifiers));
+      this.qualifiers = new HashSet<>(Arrays.asList(qualifiers));
       return this;
    }
 
@@ -229,7 +229,7 @@ public class BeanBuilder<T>
     */
    public BeanBuilder<T> addQualifiers(Annotation... qualifiers)
    {
-      this.qualifiers.addAll(new HashSet<Annotation>(Arrays.asList(qualifiers)));
+      this.qualifiers.addAll(new HashSet<>(Arrays.asList(qualifiers)));
       return this;
    }
 
@@ -314,7 +314,7 @@ public class BeanBuilder<T>
     */
    public BeanBuilder<T> types(Type... types)
    {
-      this.types = new HashSet<Type>(Arrays.asList(types));
+      this.types = new HashSet<>(Arrays.asList(types));
       return this;
    }
 
@@ -336,7 +336,7 @@ public class BeanBuilder<T>
     */
    public BeanBuilder<T> addTypes(Type... types)
    {
-      this.types.addAll(new HashSet<Type>(Arrays.asList(types)));
+      this.types.addAll(new HashSet<>(Arrays.asList(types)));
       return this;
    }
 

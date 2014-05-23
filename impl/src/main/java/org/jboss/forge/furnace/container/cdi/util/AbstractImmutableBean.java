@@ -102,7 +102,7 @@ abstract class AbstractImmutableBean<T> implements Bean<T>
       }
       else
       {
-         this.qualifiers = new HashSet<Annotation>(qualifiers);
+         this.qualifiers = new HashSet<>(qualifiers);
       }
 
       if (scope == null)
@@ -122,7 +122,7 @@ abstract class AbstractImmutableBean<T> implements Bean<T>
       }
       else
       {
-         this.stereotypes = new HashSet<Class<? extends Annotation>>(stereotypes);
+         this.stereotypes = new HashSet<>(stereotypes);
       }
 
       if (types == null)
@@ -136,7 +136,7 @@ abstract class AbstractImmutableBean<T> implements Bean<T>
       }
       else
       {
-         this.types = new HashSet<Type>(types);
+         this.types = new HashSet<>(types);
       }
 
       if (injectionPoints == null)
@@ -145,7 +145,7 @@ abstract class AbstractImmutableBean<T> implements Bean<T>
       }
       else
       {
-         this.injectionPoints = new HashSet<InjectionPoint>(injectionPoints);
+         this.injectionPoints = new HashSet<>(injectionPoints);
       }
 
       this.alternative = alternative;

@@ -24,7 +24,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 public class ExportedInstanceInjectionPoint implements InjectionPoint
 {
    private final InjectionPoint wrapped;
-   private final Set<Annotation> qualifiers = new HashSet<Annotation>();
+   private final Set<Annotation> qualifiers = new HashSet<>();
 
    public ExportedInstanceInjectionPoint(final InjectionPoint wrapped, Annotation... qualifiers)
    {

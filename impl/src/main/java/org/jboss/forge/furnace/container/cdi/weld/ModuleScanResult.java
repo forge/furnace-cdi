@@ -7,11 +7,14 @@ import java.util.List;
 
 import org.jboss.weld.resources.spi.ResourceLoader;
 
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ */
 public class ModuleScanResult
 {
-   private ResourceLoader loader;
-   private List<URL> resourceUrls;
-   private Collection<String> classes;
+   private final ResourceLoader loader;
+   private final List<URL> resourceUrls;
+   private final Collection<String> classes;
 
    public ModuleScanResult(ResourceLoader loader, List<URL> discoveredResourceUrls, Collection<String> discoveredClasses)
    {

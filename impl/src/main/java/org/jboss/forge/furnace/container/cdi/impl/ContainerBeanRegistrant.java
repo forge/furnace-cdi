@@ -7,7 +7,11 @@ import javax.enterprise.inject.spi.Extension;
 
 import org.jboss.forge.furnace.container.cdi.events.CrossContainerObserverMethod;
 import org.jboss.forge.furnace.container.cdi.events.EventManagerProducer;
+import org.jboss.weld.environment.se.WeldContainer;
 
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ */
 public class ContainerBeanRegistrant implements Extension
 {
    public void registerWeldSEBeans(@Observes BeforeBeanDiscovery event, BeanManager manager)
@@ -20,5 +24,6 @@ public class ContainerBeanRegistrant implements Extension
       event.addAnnotatedType(manager.createAnnotatedType(FurnaceProducer.class));
       event.addAnnotatedType(manager.createAnnotatedType(ImportedProducer.class));
       event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryProducer.class));
+      event.addAnnotatedType(manager.createAnnotatedType(WeldContainer.class));
    }
 }

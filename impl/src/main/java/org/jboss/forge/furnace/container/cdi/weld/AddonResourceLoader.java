@@ -20,11 +20,11 @@ public class AddonResourceLoader implements ResourceLoader
 {
    private final Map<String, Class<?>> classes;
 
-   private Addon addon;
+   private final Addon addon;
 
    public AddonResourceLoader(Addon addon)
    {
-      this.classes = new ConcurrentHashMap<String, Class<?>>();
+      this.classes = new ConcurrentHashMap<>();
       this.addon = addon;
    }
 
@@ -84,7 +84,7 @@ public class AddonResourceLoader implements ResourceLoader
    {
       try
       {
-         final HashSet<URL> resources = new HashSet<URL>();
+         final HashSet<URL> resources = new HashSet<>();
          Enumeration<URL> urls = addon.getClassLoader().getResources(name);
          while (urls.hasMoreElements())
          {

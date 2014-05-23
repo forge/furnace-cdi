@@ -43,7 +43,7 @@ abstract class ArraysUtils
    @SafeVarargs
    public static <T> Set<T> asSet(T... array)
    {
-      Set<T> result = new HashSet<T>();
+      Set<T> result = new HashSet<>();
       Collections.addAll(result, array);
       return result;
    }

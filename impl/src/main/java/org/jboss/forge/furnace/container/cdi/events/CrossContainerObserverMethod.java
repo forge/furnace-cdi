@@ -111,7 +111,7 @@ public class CrossContainerObserverMethod
    private void initStack()
    {
       if (stack == null)
-         stack = new ThreadLocal<Deque<InboundEvent>>();
+         stack = new ThreadLocal<>();
       if (stack.get() == null)
          stack.set(new ArrayDeque<InboundEvent>());
    }

@@ -25,6 +25,9 @@ import org.jboss.forge.furnace.util.Addons;
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.furnace.util.ClassLoaders;
 
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
+ */
 public class WeldServiceRegistry implements ServiceRegistry
 {
    private final Class<?>[] serviceTypes;

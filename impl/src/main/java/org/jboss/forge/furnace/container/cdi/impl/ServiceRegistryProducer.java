@@ -5,6 +5,9 @@ import javax.inject.Singleton;
 
 import org.jboss.forge.furnace.spi.ServiceRegistry;
 
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ */
 @Singleton
 public class ServiceRegistryProducer
 {

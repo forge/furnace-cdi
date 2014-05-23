@@ -2,12 +2,15 @@ package org.jboss.forge.furnace.container.cdi.impl;
 
 import java.lang.annotation.Annotation;
 
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ */
 @SuppressWarnings("all")
 final class ServiceLiteral implements Service
 {
    private static int INSTANCE_COUNT = 0;
 
-   private int id;
+   private final int id;
 
    public ServiceLiteral()
    {

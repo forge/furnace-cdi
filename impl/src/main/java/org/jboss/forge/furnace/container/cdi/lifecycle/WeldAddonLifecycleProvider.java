@@ -14,8 +14,8 @@ import org.jboss.forge.furnace.container.cdi.impl.AddonRepositoryProducer;
 import org.jboss.forge.furnace.container.cdi.impl.ContainerBeanRegistrant;
 import org.jboss.forge.furnace.container.cdi.impl.ContainerServiceExtension;
 import org.jboss.forge.furnace.container.cdi.impl.FurnaceProducer;
-import org.jboss.forge.furnace.container.cdi.impl.WeldServiceRegistry;
 import org.jboss.forge.furnace.container.cdi.impl.ServiceRegistryProducer;
+import org.jboss.forge.furnace.container.cdi.impl.WeldServiceRegistry;
 import org.jboss.forge.furnace.container.cdi.util.BeanManagerUtils;
 import org.jboss.forge.furnace.container.cdi.weld.AddonResourceLoader;
 import org.jboss.forge.furnace.container.cdi.weld.ModularURLScanner;
@@ -31,6 +31,9 @@ import org.jboss.forge.furnace.util.Assert;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.jboss.weld.resources.spi.ResourceLoader;
 
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
+ */
 public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 {
    private Furnace furnace;
@@ -59,11 +62,12 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 
       if (!scanResult.getDiscoveredResourceUrls().isEmpty())
       {
-         ContainerServiceExtension extension = new ContainerServiceExtension(container, addon);
+         ContainerServiceExtension serviceExtension = new ContainerServiceExtension(container, addon);
+         ContainerBeanRegistrant registrantExtension = new ContainerBeanRegistrant();
 
          weld = new ModularWeld(scanResult);
-         weld.addExtension(extension);
-         weld.addExtension(new ContainerBeanRegistrant());
+         weld.addExtension(serviceExtension);
+         weld.addExtension(registrantExtension);
          WeldContainer container = weld.initialize();
 
          manager = container.getBeanManager();
@@ -85,7 +89,7 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 
          ServiceRegistryProducer serviceRegistryProducer = BeanManagerUtils.getContextualInstance(manager,
                   ServiceRegistryProducer.class);
-         serviceRegistry = new WeldServiceRegistry(furnace.getLockManager(), addon, manager, extension.getServices());
+         serviceRegistry = new WeldServiceRegistry(furnace.getLockManager(), addon, manager, serviceExtension.getServices());
          serviceRegistryProducer.setServiceRegistry(serviceRegistry);
          Assert.notNull(BeanManagerUtils.getContextualInstance(manager, ServiceRegistry.class),
                   "InboundEvent registry was null.");

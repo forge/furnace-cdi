@@ -8,6 +8,9 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ */
 @Documented
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)

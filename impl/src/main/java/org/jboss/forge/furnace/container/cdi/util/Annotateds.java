@@ -96,11 +96,11 @@ final class Annotateds
             implements Comparator<AnnotatedMethod<? super T>>, Serializable
    {
 
-      private AnnotatedCallableComparator<T> callableComparator = new AnnotatedCallableComparator<T>();
+      private final AnnotatedCallableComparator<T> callableComparator = new AnnotatedCallableComparator<>();
 
       public static <T> Comparator<AnnotatedMethod<? super T>> instance()
       {
-         return new AnnotatedMethodComparator<T>();
+         return new AnnotatedMethodComparator<>();
       }
 
       @Override
@@ -131,11 +131,11 @@ final class Annotateds
             implements Comparator<AnnotatedConstructor<? super T>>, Serializable
    {
 
-      private AnnotatedCallableComparator<T> callableComparator = new AnnotatedCallableComparator<T>();
+      private final AnnotatedCallableComparator<T> callableComparator = new AnnotatedCallableComparator<>();
 
       public static <T> Comparator<AnnotatedConstructor<? super T>> instance()
       {
-         return new AnnotatedConstructorComparator<T>();
+         return new AnnotatedConstructorComparator<>();
       }
 
       @Override
@@ -168,7 +168,7 @@ final class Annotateds
 
       public static <T> Comparator<AnnotatedField<? super T>> instance()
       {
-         return new AnnotatedFieldComparator<T>();
+         return new AnnotatedFieldComparator<>();
       }
 
       @Override
@@ -248,7 +248,7 @@ final class Annotateds
       builder.append("{");
 
       // now deal with the fields
-      List<AnnotatedField<? super X>> sortedFields = new ArrayList<AnnotatedField<? super X>>();
+      List<AnnotatedField<? super X>> sortedFields = new ArrayList<>();
       sortedFields.addAll(fields);
       Collections.sort(sortedFields, AnnotatedFieldComparator.<X> instance());
       for (AnnotatedField<? super X> field : sortedFields)
@@ -261,7 +261,7 @@ final class Annotateds
       }
 
       // methods
-      List<AnnotatedMethod<? super X>> sortedMethods = new ArrayList<AnnotatedMethod<? super X>>();
+      List<AnnotatedMethod<? super X>> sortedMethods = new ArrayList<>();
       sortedMethods.addAll(methods);
       Collections.sort(sortedMethods, AnnotatedMethodComparator.<X> instance());
       for (AnnotatedMethod<? super X> method : sortedMethods)
@@ -274,7 +274,7 @@ final class Annotateds
       }
 
       // constructors
-      List<AnnotatedConstructor<? super X>> sortedConstructors = new ArrayList<AnnotatedConstructor<? super X>>();
+      List<AnnotatedConstructor<? super X>> sortedConstructors = new ArrayList<>();
       sortedConstructors.addAll(constructors);
       Collections.sort(sortedConstructors, AnnotatedConstructorComparator.<X> instance());
       for (AnnotatedConstructor<? super X> constructor : sortedConstructors)
@@ -479,7 +479,7 @@ final class Annotateds
       {
          return false;
       }
-      Map<Field, AnnotatedField<?>> fields = new HashMap<Field, AnnotatedField<?>>();
+      Map<Field, AnnotatedField<?>> fields = new HashMap<>();
       for (AnnotatedField<?> f : t2.getFields())
       {
          fields.put(f.getJavaMember(), f);
@@ -503,7 +503,7 @@ final class Annotateds
       {
          return false;
       }
-      Map<Method, AnnotatedMethod<?>> methods = new HashMap<Method, AnnotatedMethod<?>>();
+      Map<Method, AnnotatedMethod<?>> methods = new HashMap<>();
       for (AnnotatedMethod<?> f : t2.getMethods())
       {
          methods.put(f.getJavaMember(), f);
@@ -527,7 +527,7 @@ final class Annotateds
          return false;
       }
       Map<Constructor<?>, AnnotatedConstructor<?>> constructors =
-               new HashMap<Constructor<?>, AnnotatedConstructor<?>>();
+               new HashMap<>();
       for (AnnotatedConstructor<?> f : t2.getConstructors())
       {
          constructors.put(f.getJavaMember(), f);
@@ -572,7 +572,7 @@ final class Annotateds
       StringBuilder builder = new StringBuilder();
       builder.append('[');
 
-      List<Annotation> annotationList = new ArrayList<Annotation>(annotations.size());
+      List<Annotation> annotationList = new ArrayList<>(annotations.size());
       annotationList.addAll(annotations);
       Collections.sort(annotationList, AnnotationComparator.INSTANCE);
 
@@ -582,7 +582,7 @@ final class Annotateds
          builder.append(a.annotationType().getName());
          builder.append('(');
          Method[] declaredMethods = a.annotationType().getDeclaredMethods();
-         List<Method> methods = new ArrayList<Method>(declaredMethods.length);
+         List<Method> methods = new ArrayList<>(declaredMethods.length);
          methods.addAll(Arrays.asList(declaredMethods));
          Collections.sort(methods, MethodComparator.INSTANCE);
 

@@ -17,14 +17,14 @@ import org.jboss.forge.furnace.container.cdi.impl.Service;
  */
 public class LocalServiceInjectionPoint implements InjectionPoint
 {
-   private InjectionPoint wrapped;
-   private Set<Annotation> qualifiers;
-   private Class<?> serviceType;
+   private final InjectionPoint wrapped;
+   private final Set<Annotation> qualifiers;
+   private final Class<?> serviceType;
 
    public LocalServiceInjectionPoint(InjectionPoint wrapped, Class<?> serviceType)
    {
       this.wrapped = wrapped;
-      this.qualifiers = new HashSet<Annotation>(wrapped.getQualifiers());
+      this.qualifiers = new HashSet<>(wrapped.getQualifiers());
 
       for (Annotation a : qualifiers)
       {

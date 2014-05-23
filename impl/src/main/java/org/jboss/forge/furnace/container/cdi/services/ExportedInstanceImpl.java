@@ -22,6 +22,9 @@ import org.jboss.forge.furnace.spi.ExportedInstance;
 import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.furnace.util.ClassLoaders;
 
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ */
 public class ExportedInstanceImpl<R> implements ExportedInstance<R>
 {
 

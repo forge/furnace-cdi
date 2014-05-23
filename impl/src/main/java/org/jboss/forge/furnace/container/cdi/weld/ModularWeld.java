@@ -6,8 +6,9 @@
  */
 package org.jboss.forge.furnace.container.cdi.weld;
 
-import org.jboss.weld.bootstrap.api.Bootstrap;
+import org.jboss.weld.bootstrap.api.CDI11Bootstrap;
 import org.jboss.weld.bootstrap.api.SingletonProvider;
+import org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider;
 import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.resources.spi.ResourceLoader;
@@ -22,10 +23,10 @@ public class ModularWeld extends Weld
       /*
        * This must happen once per JVM
        */
-      SingletonProvider.initialize(new SilentTCCLSingletonProvider());
+      SingletonProvider.initialize(new TCCLSingletonProvider());
    }
 
-   private ModuleScanResult scanResult;
+   private final ModuleScanResult scanResult;
 
    public ModularWeld(ModuleScanResult scanResult)
    {
@@ -33,8 +34,8 @@ public class ModularWeld extends Weld
    }
 
    @Override
-   protected Deployment createDeployment(final ResourceLoader resourceLoader, final Bootstrap bootstrap)
+   protected Deployment createDeployment(ResourceLoader loader, CDI11Bootstrap bootstrap)
    {
-      return new ModularWeldDeployment(bootstrap, scanResult.getResourceLoader(), scanResult);
+      return super.createDeployment(scanResult.getResourceLoader(), bootstrap);
    }
 }

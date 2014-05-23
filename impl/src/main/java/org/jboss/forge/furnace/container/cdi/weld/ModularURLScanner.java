@@ -34,9 +34,9 @@ public class ModularURLScanner
 
    public ModuleScanResult scan()
    {
-      List<String> discoveredClasses = new ArrayList<String>();
-      List<URL> discoveredResourceUrls = new ArrayList<URL>();
-      Collection<String> paths = new ArrayList<String>();
+      List<String> discoveredClasses = new ArrayList<>();
+      List<URL> discoveredResourceUrls = new ArrayList<>();
+      Collection<String> paths = new ArrayList<>();
       for (String resourceName : resources)
       {
          // grab all the URLs for this resource

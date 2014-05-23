@@ -6,6 +6,9 @@ import javax.inject.Singleton;
 
 import org.jboss.forge.furnace.repositories.AddonRepository;
 
+/**
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ */
 @Singleton
 public class AddonRepositoryProducer
 {
