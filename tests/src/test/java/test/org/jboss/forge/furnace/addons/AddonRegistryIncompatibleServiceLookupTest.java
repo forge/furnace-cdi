@@ -105,9 +105,9 @@ public class AddonRegistryIncompatibleServiceLookupTest
       Assert.assertFalse(depOneServiceRegistry.hasService(Aa.class.getName()));
       Assert.assertFalse(depTwoServiceRegistry.hasService(Aa.class));
       Assert.assertFalse(depTwoServiceRegistry.hasService(Aa.class.getName()));
-      Assert.assertFalse(depOneServiceRegistry.hasService(BB.class));
+      Assert.assertFalse(depOneServiceRegistry.hasService(loadClass(BB.class, depTwo.getClassLoader())));
       Assert.assertTrue(depOneServiceRegistry.hasService(BB.class.getName()));
-      Assert.assertTrue(depTwoServiceRegistry.hasService(BB.class));
+      Assert.assertTrue(depTwoServiceRegistry.hasService(loadClass(BB.class, depTwo.getClassLoader())));
       Assert.assertTrue(depTwoServiceRegistry.hasService(BB.class.getName()));
 
       Assert.assertNotNull(depTwoServiceRegistry.getExportedInstance(BB.class.getName()));
@@ -119,6 +119,11 @@ public class AddonRegistryIncompatibleServiceLookupTest
       Assert.assertTrue(iterator2.hasNext());
       Assert.assertThat(iterator2.next(), is(instanceOf(BB.class)));
       Assert.assertFalse(iterator2.hasNext());
+   }
+
+   private Class<?> loadClass(Class<?> clazz, ClassLoader cl) throws Exception
+   {
+      return cl.loadClass(clazz.getName());
    }
 
 }
