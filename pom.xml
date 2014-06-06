@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
@@ -45,6 +46,7 @@
       <version.annotations>1.0.0.Alpha1</version.annotations>
       <version.cdi>1.1</version.cdi>
       <version.furnace>${project.version}</version.furnace>
+      <version.javax.el>2.2.4</version.javax.el>
       <version.jboss.spec>3.0.2.Final</version.jboss.spec>
       <version.slf4j>1.7.2</version.slf4j>
       <version.weld>2.2.1.Final</version.weld>
@@ -115,7 +117,11 @@
             <artifactId>weld-se-core</artifactId>
             <version>${version.weld}</version>
          </dependency>
-
+         <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>${version.javax.el}</version>
+         </dependency>
 
          <!-- SLF4J Logging API -->
          <dependency>
