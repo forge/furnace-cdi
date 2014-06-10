@@ -9,6 +9,7 @@ package test.org.jboss.forge.furnace.mocks.services;
 
 import javax.enterprise.inject.Produces;
 
+import test.org.jboss.forge.furnace.mocks.PlainBean;
 import test.org.jboss.forge.furnace.mocks.PlainInterface;
 
 /**
@@ -20,6 +21,6 @@ public class ProducesPlainInterfaceService
    @Produces
    public PlainInterface producePlainInterface()
    {
-      return new ProducedPlainBean("Produced");
+      return new PlainBean("Produced");
    }
 }

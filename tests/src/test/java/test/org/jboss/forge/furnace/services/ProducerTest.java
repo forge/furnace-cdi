@@ -24,8 +24,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import test.org.jboss.forge.furnace.mocks.PlainBean;
 import test.org.jboss.forge.furnace.mocks.PlainInterface;
-import test.org.jboss.forge.furnace.mocks.services.ProducedPlainBean;
 import test.org.jboss.forge.furnace.mocks.services.ProducesPlainInterfaceService;
 
 /**
@@ -44,7 +44,7 @@ public class ProducerTest
    })
    public static ForgeArchive getDeployment()
    {
-      JavaArchive implJar = ShrinkWrap.create(JavaArchive.class).addClass(ProducedPlainBean.class);
+      JavaArchive implJar = ShrinkWrap.create(JavaArchive.class).addClass(PlainBean.class);
 
       ForgeArchive archive = ShrinkWrap
                .create(ForgeArchive.class)
