@@ -14,5 +14,10 @@ package test.org.jboss.forge.furnace.mocks;
 @PlainQualifier
 public class QualifiedPlainBean implements PlainInterface
 {
+   @Override
+   public String getValue()
+   {
+      return null;
+   }
 
 }

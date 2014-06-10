@@ -114,10 +114,9 @@ public class ContainerServiceExtension implements Extension
    public void processProducerHooks(@Observes ProcessProducer<?, ?> event, BeanManager manager)
    {
       Class<?> type = Types.toClass(event.getAnnotatedMember().getJavaMember());
-      ClassLoader classLoader = type.getClassLoader();
-      if (classLoader != null && addon.getClassLoader().equals(classLoader))
+      if (ClassLoaders.containsClass(addon.getClassLoader(), type.getName()))
       {
-         // I am not sure what this is doing anymore.
+         // FORGE-1876: Register @Produces objects as valid services
          services.put(type, manager.createAnnotatedType(type));
       }
    }
@@ -140,7 +139,7 @@ public class ContainerServiceExtension implements Extension
          }
 
          ContextualLifecycle<Object> lifecycle = new ImportedBeanLifecycle(annotated, member, injectionPoint, manager);
-         
+
          Bean<?> serviceBean = new BeanBuilder<>(manager)
                   .beanClass(beanClass)
                   .types(beanTypeClosure)
