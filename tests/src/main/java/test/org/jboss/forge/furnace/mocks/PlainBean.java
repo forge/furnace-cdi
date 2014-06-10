@@ -13,5 +13,22 @@ package test.org.jboss.forge.furnace.mocks;
  */
 public class PlainBean implements PlainInterface
 {
+   private final String value;
+
+   public PlainBean()
+   {
+      this.value = null;
+   }
+
+   public PlainBean(String value)
+   {
+      this.value = value;
+   }
+
+   @Override
+   public String getValue()
+   {
+      return this.value;
+   }
 
 }

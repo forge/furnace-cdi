@@ -13,5 +13,5 @@ package test.org.jboss.forge.furnace.mocks;
  */
 public interface PlainInterface
 {
-
+   String getValue();
 }
