@@ -6,9 +6,11 @@
  */
 package org.jboss.forge.furnace.container.cdi.weld;
 
+import org.jboss.forge.furnace.container.cdi.impl.PerformanceTunedBootstrapConfiguration;
 import org.jboss.weld.bootstrap.api.CDI11Bootstrap;
 import org.jboss.weld.bootstrap.api.SingletonProvider;
 import org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider;
+import org.jboss.weld.bootstrap.spi.BootstrapConfiguration;
 import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.resources.spi.ResourceLoader;
@@ -36,6 +38,8 @@ public class ModularWeld extends Weld
    @Override
    protected Deployment createDeployment(ResourceLoader loader, CDI11Bootstrap bootstrap)
    {
-      return super.createDeployment(scanResult.getResourceLoader(), bootstrap);
+      Deployment deployment = super.createDeployment(scanResult.getResourceLoader(), bootstrap);
+      deployment.getServices().add(BootstrapConfiguration.class, new PerformanceTunedBootstrapConfiguration());
+      return deployment;
    }
 }

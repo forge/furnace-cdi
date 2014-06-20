@@ -17,14 +17,13 @@
 package org.jboss.forge.furnace.container.cdi.impl;
 
 import org.jboss.weld.bootstrap.spi.BootstrapConfiguration;
-import org.jboss.weld.resources.spi.ResourceLoader;
 
 /**
- * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
 public class PerformanceTunedBootstrapConfiguration implements BootstrapConfiguration
 {
-   public PerformanceTunedBootstrapConfiguration(ResourceLoader loader)
+   public PerformanceTunedBootstrapConfiguration()
    {
       // TODO detect # of CPUs and #of classes to scan. optimize pools respectively
    }
