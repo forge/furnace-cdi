@@ -55,8 +55,7 @@ public class ExportedServicesMissingTest
    }
 
    @Inject
-   @SuppressWarnings("unused")
-   private ServiceInterface remote;
+   ServiceInterface remote;
 
    @Test
    public void testRemoteInjectionOfRemoteService()
