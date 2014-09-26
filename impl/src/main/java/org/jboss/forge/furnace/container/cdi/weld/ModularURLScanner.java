@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.jboss.weld.environment.se.discovery.url.ClasspathScanningException;
 import org.jboss.weld.resources.spi.ResourceLoader;
 
 /**
@@ -88,7 +87,7 @@ public class ModularURLScanner
             }
             catch (UnsupportedEncodingException ex)
             {
-               throw new ClasspathScanningException("Error decoding URL using UTF-8");
+               throw new RuntimeException("Error decoding " + urlPath + " using UTF-8");
             }
 
             paths.add(urlPath);
