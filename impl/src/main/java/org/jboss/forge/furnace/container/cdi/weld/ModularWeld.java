@@ -25,6 +25,7 @@ public class ModularWeld extends Weld
       /*
        * This must happen once per JVM
        */
+      SingletonProvider.reset();
       SingletonProvider.initialize(new TCCLSingletonProvider());
    }
 
