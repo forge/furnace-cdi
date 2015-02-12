@@ -26,85 +26,85 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class AddonDependencyVersionRangeTest
 {
-   @Deployment(order = 1)
-   @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
-   })
-   public static ForgeArchive getDeployment()
-   {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-               .addBeansXML()
-               .addAsAddonDependencies(
-                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
-                        AddonDependencyEntry.create("A", "[1,2]", true),
-                        AddonDependencyEntry.create("B", "1", true),
-                        AddonDependencyEntry.create("C", "2", true)
-               );
+    @Deployment(order = 1)
+    @Dependencies({
+                @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
+    })
+    public static ForgeArchive getDeployment()
+    {
+        ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+                    .addBeansXML()
+                    .addAsAddonDependencies(
+                                AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
+                                AddonDependencyEntry.create("A", "[1,2]", true),
+                                AddonDependencyEntry.create("B", "1", true),
+                                AddonDependencyEntry.create("C", "2", true)
+                    );
 
-      return archive;
-   }
+        return archive;
+    }
 
-   @Deployment(name = "A,1", testable = false, order = 2)
-   public static ForgeArchive getDeploymentA1()
-   {
-      return ShrinkWrap.create(ForgeArchive.class).addBeansXML();
-   }
+    @Deployment(name = "A,1", testable = false, order = 2)
+    public static ForgeArchive getDeploymentA1()
+    {
+        return ShrinkWrap.create(ForgeArchive.class).addBeansXML();
+    }
 
-   @Deployment(name = "A,2", testable = false, order = 3)
-   public static ForgeArchive getDeploymentA2()
-   {
-      return ShrinkWrap.create(ForgeArchive.class).addBeansXML();
-   }
+    @Deployment(name = "A,2", testable = false, order = 3)
+    public static ForgeArchive getDeploymentA2()
+    {
+        return ShrinkWrap.create(ForgeArchive.class).addBeansXML();
+    }
 
-   @Deployment(name = "A,3", testable = false, order = 3)
-   public static ForgeArchive getDeploymentA3()
-   {
-      return ShrinkWrap.create(ForgeArchive.class).addBeansXML();
-   }
+    @Deployment(name = "A,3", testable = false, order = 3)
+    public static ForgeArchive getDeploymentA3()
+    {
+        return ShrinkWrap.create(ForgeArchive.class).addBeansXML();
+    }
 
-   @Deployment(name = "B,1", testable = false, order = 4)
-   public static ForgeArchive getDeploymentB1()
-   {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-               .addBeansXML()
-               .addAsAddonDependencies(
-                        AddonDependencyEntry.create("A", "2,3", true)
-               );
+    @Deployment(name = "B,1", testable = false, order = 4)
+    public static ForgeArchive getDeploymentB1()
+    {
+        ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+                    .addBeansXML()
+                    .addAsAddonDependencies(
+                                AddonDependencyEntry.create("A", "2,3", true)
+                    );
 
-      return archive;
-   }
+        return archive;
+    }
 
-   @Deployment(name = "C,1", testable = false, order = 4)
-   public static ForgeArchive getDeploymentC1()
-   {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-               .addBeansXML()
-               .addAsAddonDependencies(
-                        AddonDependencyEntry.create("A", "1", false)
-               );
+    @Deployment(name = "C,1", testable = false, order = 4)
+    public static ForgeArchive getDeploymentC1()
+    {
+        ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+                    .addBeansXML()
+                    .addAsAddonDependencies(
+                                AddonDependencyEntry.create("A", "1", false)
+                    );
 
-      return archive;
-   }
+        return archive;
+    }
 
-   @Deployment(name = "C,2", testable = false, order = 4)
-   public static ForgeArchive getDeploymentC2()
-   {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-               .addBeansXML()
-               .addAsAddonDependencies(
-                        AddonDependencyEntry.create("A", "2", true)
-               );
+    @Deployment(name = "C,2", testable = false, order = 4)
+    public static ForgeArchive getDeploymentC2()
+    {
+        ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+                    .addBeansXML()
+                    .addAsAddonDependencies(
+                                AddonDependencyEntry.create("A", "2", true)
+                    );
 
-      return archive;
-   }
+        return archive;
+    }
 
-   @Inject
-   private AddonRegistry registry;
+    @Inject
+    private AddonRegistry registry;
 
-   @Test
-   public void testBuildGraphs() throws Exception
-   {
-      Assert.assertEquals("ROOT", registry.getName());
-      Assert.assertEquals(5, registry.getAddons().size());
-   }
+    @Test
+    public void testBuildGraphs() throws Exception
+    {
+        Assert.assertTrue(registry.getName().startsWith("ROOT"));
+        Assert.assertEquals(8, registry.getAddons().size());
+    }
 }
