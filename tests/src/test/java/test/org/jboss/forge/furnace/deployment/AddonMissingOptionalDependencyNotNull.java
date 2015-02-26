@@ -10,9 +10,9 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.AddonDeployment;
+import org.jboss.forge.arquillian.AddonDeployments;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonId;
 import org.jboss.forge.furnace.addons.AddonRegistry;
@@ -29,12 +29,12 @@ import org.junit.runner.RunWith;
 public class AddonMissingOptionalDependencyNotNull
 {
    @Deployment(order = 3)
-   @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
+   @AddonDeployments({
+            @AddonDeployment(name = "org.jboss.forge.furnace.container:cdi")
    })
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
                )
@@ -44,10 +44,10 @@ public class AddonMissingOptionalDependencyNotNull
    }
 
    @Deployment(name = "dep3,3", testable = false, order = 1)
-   public static ForgeArchive getDeploymentDep3()
+   public static AddonArchive getDeploymentDep3()
    {
-      ForgeArchive archive = ShrinkWrap
-               .create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap
+               .create(AddonArchive.class)
                .addBeansXML()
                .addAsAddonDependencies(AddonDependencyEntry.create("dep4", "4", false, true));
 

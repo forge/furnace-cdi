@@ -11,9 +11,9 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.AddonDeployment;
+import org.jboss.forge.arquillian.AddonDeployments;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.services.Imported;
@@ -39,15 +39,15 @@ import test.org.jboss.forge.furnace.mocks.services.ProducesPlainInterfaceService
 public class ProducerTest
 {
    @Deployment(order = 1)
-   @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
+   @AddonDeployments({
+            @AddonDeployment(name = "org.jboss.forge.furnace.container:cdi")
    })
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
       JavaArchive implJar = ShrinkWrap.create(JavaArchive.class).addClass(PlainBean.class);
 
-      ForgeArchive archive = ShrinkWrap
-               .create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap
+               .create(AddonArchive.class)
                .addBeansXML()
                .addClasses(ProducesPlainInterfaceService.class)
                .addAsLibraries(implJar)
@@ -59,10 +59,10 @@ public class ProducerTest
    }
 
    @Deployment(name = "API,1", testable = false, order = 2)
-   public static ForgeArchive getDeploymentDep1()
+   public static AddonArchive getDeploymentDep1()
    {
-      ForgeArchive archive = ShrinkWrap
-               .create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap
+               .create(AddonArchive.class)
                .addBeansXML()
                .addClass(PlainInterface.class)
                .addAsAddonDependencies(

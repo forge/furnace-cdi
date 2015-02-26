@@ -11,9 +11,9 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.AddonDeployment;
+import org.jboss.forge.arquillian.AddonDeployments;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
@@ -31,12 +31,12 @@ import test.org.jboss.forge.furnace.mocks.services.ProxiedServiceStrategy;
 public class ProxiedRemoteServiceInjectionTest
 {
    @Deployment(order = 0)
-   @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
+   @AddonDeployments({
+            @AddonDeployment(name = "org.jboss.forge.furnace.container:cdi")
    })
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
                .addBeansXML()
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
@@ -47,9 +47,9 @@ public class ProxiedRemoteServiceInjectionTest
    }
 
    @Deployment(name = "dependency,2", testable = false, order = 1)
-   public static ForgeArchive getDependencyDeployment()
+   public static AddonArchive getDependencyDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class, "dependency.jar")
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class, "dependency.jar")
                .addClass(ProxiedServiceConsumer.class)
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
@@ -61,9 +61,9 @@ public class ProxiedRemoteServiceInjectionTest
    }
 
    @Deployment(name = "provider,1", testable = false, order = 2)
-   public static ForgeArchive getProviderDeployment()
+   public static AddonArchive getProviderDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class, "provider.jar")
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class, "provider.jar")
                .addClass(ProxiedService.class)
                .addClass(ProxiedServiceImpl.class)
                .addClass(ProxiedServiceBaseClass.class)

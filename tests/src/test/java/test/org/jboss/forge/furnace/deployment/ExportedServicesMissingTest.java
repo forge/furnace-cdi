@@ -12,9 +12,9 @@ import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.ShouldThrowException;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.AddonDeployment;
+import org.jboss.forge.arquillian.AddonDeployments;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
@@ -31,9 +31,9 @@ public class ExportedServicesMissingTest
 {
    @Deployment(order = 2)
    @ShouldThrowException(DeploymentException.class)
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
                .addClass(ServiceInterface.class)
                .addAsAddonDependencies(
                         AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi")
@@ -44,12 +44,12 @@ public class ExportedServicesMissingTest
    }
 
    @Deployment(name = "primer,1", order = 1)
-   @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
+   @AddonDeployments({
+            @AddonDeployment(name = "org.jboss.forge.furnace.container:cdi")
    })
-   public static ForgeArchive getDeploymentPrimer()
+   public static AddonArchive getDeploymentPrimer()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class).addBeansXML();
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class).addBeansXML();
 
       return archive;
    }

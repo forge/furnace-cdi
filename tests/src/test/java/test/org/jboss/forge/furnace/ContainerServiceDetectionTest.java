@@ -12,9 +12,9 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.AddonDeployment;
+import org.jboss.forge.arquillian.AddonDeployments;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.forge.furnace.spi.ExportedInstance;
@@ -37,12 +37,12 @@ import test.org.jboss.forge.furnace.mocks.ImplementingClass2;
 public class ContainerServiceDetectionTest
 {
    @Deployment
-   @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
+   @AddonDeployments({
+            @AddonDeployment(name = "org.jboss.forge.furnace.container:cdi")
    })
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
                .addClasses(ExportedAbstractClass.class,
                         ExportedConcreteClass.class,
                         AbstractImplementation.class,
@@ -93,7 +93,8 @@ public class ContainerServiceDetectionTest
    @Test
    public void testGetExportedInstancesByBaseType()
    {
-      Set<ExportedInstance<ExportedInterface>> byInterface = addon.getServiceRegistry().getExportedInstances(ExportedInterface.class);
+      Set<ExportedInstance<ExportedInterface>> byInterface = addon.getServiceRegistry().getExportedInstances(
+               ExportedInterface.class);
       Set<ExportedInstance<AbstractImplementation>> byAbstractBaseClass = addon.getServiceRegistry()
                .getExportedInstances(AbstractImplementation.class);
 

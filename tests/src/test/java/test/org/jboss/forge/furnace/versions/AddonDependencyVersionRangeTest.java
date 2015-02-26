@@ -10,9 +10,9 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.AddonDeployment;
+import org.jboss.forge.arquillian.AddonDeployments;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -26,85 +26,85 @@ import org.junit.runner.RunWith;
 @RunWith(Arquillian.class)
 public class AddonDependencyVersionRangeTest
 {
-    @Deployment(order = 1)
-    @Dependencies({
-                @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
-    })
-    public static ForgeArchive getDeployment()
-    {
-        ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-                    .addBeansXML()
-                    .addAsAddonDependencies(
-                                AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
-                                AddonDependencyEntry.create("A", "[1,2]", true),
-                                AddonDependencyEntry.create("B", "1", true),
-                                AddonDependencyEntry.create("C", "2", true)
-                    );
+   @Deployment(order = 1)
+   @AddonDeployments({
+            @AddonDeployment(name = "org.jboss.forge.furnace.container:cdi")
+   })
+   public static AddonArchive getDeployment()
+   {
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
+               .addBeansXML()
+               .addAsAddonDependencies(
+                        AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"),
+                        AddonDependencyEntry.create("A", "[1,2]", true),
+                        AddonDependencyEntry.create("B", "1", true),
+                        AddonDependencyEntry.create("C", "2", true)
+               );
 
-        return archive;
-    }
+      return archive;
+   }
 
-    @Deployment(name = "A,1", testable = false, order = 2)
-    public static ForgeArchive getDeploymentA1()
-    {
-        return ShrinkWrap.create(ForgeArchive.class).addBeansXML();
-    }
+   @Deployment(name = "A,1", testable = false, order = 2)
+   public static AddonArchive getDeploymentA1()
+   {
+      return ShrinkWrap.create(AddonArchive.class).addBeansXML();
+   }
 
-    @Deployment(name = "A,2", testable = false, order = 3)
-    public static ForgeArchive getDeploymentA2()
-    {
-        return ShrinkWrap.create(ForgeArchive.class).addBeansXML();
-    }
+   @Deployment(name = "A,2", testable = false, order = 3)
+   public static AddonArchive getDeploymentA2()
+   {
+      return ShrinkWrap.create(AddonArchive.class).addBeansXML();
+   }
 
-    @Deployment(name = "A,3", testable = false, order = 3)
-    public static ForgeArchive getDeploymentA3()
-    {
-        return ShrinkWrap.create(ForgeArchive.class).addBeansXML();
-    }
+   @Deployment(name = "A,3", testable = false, order = 3)
+   public static AddonArchive getDeploymentA3()
+   {
+      return ShrinkWrap.create(AddonArchive.class).addBeansXML();
+   }
 
-    @Deployment(name = "B,1", testable = false, order = 4)
-    public static ForgeArchive getDeploymentB1()
-    {
-        ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-                    .addBeansXML()
-                    .addAsAddonDependencies(
-                                AddonDependencyEntry.create("A", "2,3", true)
-                    );
+   @Deployment(name = "B,1", testable = false, order = 4)
+   public static AddonArchive getDeploymentB1()
+   {
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
+               .addBeansXML()
+               .addAsAddonDependencies(
+                        AddonDependencyEntry.create("A", "2,3", true)
+               );
 
-        return archive;
-    }
+      return archive;
+   }
 
-    @Deployment(name = "C,1", testable = false, order = 4)
-    public static ForgeArchive getDeploymentC1()
-    {
-        ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-                    .addBeansXML()
-                    .addAsAddonDependencies(
-                                AddonDependencyEntry.create("A", "1", false)
-                    );
+   @Deployment(name = "C,1", testable = false, order = 4)
+   public static AddonArchive getDeploymentC1()
+   {
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
+               .addBeansXML()
+               .addAsAddonDependencies(
+                        AddonDependencyEntry.create("A", "1", false)
+               );
 
-        return archive;
-    }
+      return archive;
+   }
 
-    @Deployment(name = "C,2", testable = false, order = 4)
-    public static ForgeArchive getDeploymentC2()
-    {
-        ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
-                    .addBeansXML()
-                    .addAsAddonDependencies(
-                                AddonDependencyEntry.create("A", "2", true)
-                    );
+   @Deployment(name = "C,2", testable = false, order = 4)
+   public static AddonArchive getDeploymentC2()
+   {
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
+               .addBeansXML()
+               .addAsAddonDependencies(
+                        AddonDependencyEntry.create("A", "2", true)
+               );
 
-        return archive;
-    }
+      return archive;
+   }
 
-    @Inject
-    private AddonRegistry registry;
+   @Inject
+   private AddonRegistry registry;
 
-    @Test
-    public void testBuildGraphs() throws Exception
-    {
-        Assert.assertTrue(registry.getName().startsWith("ROOT"));
-        Assert.assertEquals(8, registry.getAddons().size());
-    }
+   @Test
+   public void testBuildGraphs() throws Exception
+   {
+      Assert.assertTrue(registry.getName().startsWith("ROOT"));
+      Assert.assertEquals(8, registry.getAddons().size());
+   }
 }

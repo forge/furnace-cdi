@@ -8,9 +8,9 @@ package test.org.jboss.forge.furnace.dependencies;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.AddonDeployment;
+import org.jboss.forge.arquillian.AddonDeployments;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
@@ -27,12 +27,12 @@ import test.org.jboss.forge.furnace.mocks.services.PublishedService;
 public class ClassLoadingOnlyAddonTest
 {
    @Deployment(order = 1)
-   @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
+   @AddonDeployments({
+            @AddonDeployment(name = "org.jboss.forge.furnace.container:cdi")
    })
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
                .addClass(PublishedService.class)
                .addBeansXML()
                .addAsAddonDependencies(
@@ -44,9 +44,9 @@ public class ClassLoadingOnlyAddonTest
    }
 
    @Deployment(testable = false, name = "noncdi,1", order = 2)
-   public static ForgeArchive getDeployment2()
+   public static AddonArchive getDeployment2()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
                .addClasses(NonService.class);
 
       return archive;

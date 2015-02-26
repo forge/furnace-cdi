@@ -17,5 +17,5 @@ public class ImplementingClass2 extends AbstractImplementation
    void foo()
    {
    }
-   
+
 }

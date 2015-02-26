@@ -11,9 +11,9 @@ import javax.inject.Inject;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.forge.arquillian.AddonDependency;
-import org.jboss.forge.arquillian.Dependencies;
-import org.jboss.forge.arquillian.archive.ForgeArchive;
+import org.jboss.forge.arquillian.AddonDeployment;
+import org.jboss.forge.arquillian.AddonDeployments;
+import org.jboss.forge.arquillian.archive.AddonArchive;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.exception.ContainerException;
 import org.jboss.forge.furnace.lifecycle.AddonLifecycleProvider;
@@ -35,13 +35,13 @@ import test.org.jboss.forge.furnace.mocks.services.PublishedService;
 public class NullServiceRegistryLookupTest
 {
    @Deployment(order = 2)
-   @Dependencies({
-            @AddonDependency(name = "org.jboss.forge.furnace.container:cdi")
+   @AddonDeployments({
+            @AddonDeployment(name = "org.jboss.forge.furnace.container:cdi")
    })
-   public static ForgeArchive getDeployment()
+   public static AddonArchive getDeployment()
    {
-      ForgeArchive archive = ShrinkWrap
-               .create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap
+               .create(AddonArchive.class)
                .addClasses(ConsumingService.class, TestExtension.class)
                .addBeansXML()
                .addAsServiceProvider(Extension.class, TestExtension.class)
@@ -54,9 +54,9 @@ public class NullServiceRegistryLookupTest
    }
 
    @Deployment(name = "dependency,1", testable = false, order = 1)
-   public static ForgeArchive getDependencyDeployment()
+   public static AddonArchive getDependencyDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
                .addClasses(PublishedService.class)
                .addBeansXML()
                .addAsAddonDependencies(
@@ -67,9 +67,9 @@ public class NullServiceRegistryLookupTest
    }
 
    @Deployment(name = "nullcontainer,1", testable = false, order = 1)
-   public static ForgeArchive getContainerDeployment()
+   public static AddonArchive getContainerDeployment()
    {
-      ForgeArchive archive = ShrinkWrap.create(ForgeArchive.class)
+      AddonArchive archive = ShrinkWrap.create(AddonArchive.class)
                .addClass(NullAddonLifecycleProvider.class)
                .addAsServiceProvider(AddonLifecycleProvider.class, NullAddonLifecycleProvider.class);
 

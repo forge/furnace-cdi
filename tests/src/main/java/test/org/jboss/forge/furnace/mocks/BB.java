@@ -1,4 +1,5 @@
 package test.org.jboss.forge.furnace.mocks;
+
 /**
  * Copyright 2014 Red Hat, Inc. and/or its affiliates.
  *
