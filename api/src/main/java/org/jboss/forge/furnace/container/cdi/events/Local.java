@@ -14,9 +14,16 @@ import java.lang.annotation.Target;
 
 import javax.inject.Qualifier;
 
+import org.jboss.forge.furnace.addons.Addon;
+import org.jboss.forge.furnace.event.PostStartup;
+import org.jboss.forge.furnace.event.PreShutdown;
+
 /**
- * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
+ * This qualifier should be used when you want to listen for {@link PostStartup} and {@link PreShutdown} events of the
+ * {@link Addon} this observer is on.
  * 
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
+ * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  */
 @Documented
 @Qualifier
