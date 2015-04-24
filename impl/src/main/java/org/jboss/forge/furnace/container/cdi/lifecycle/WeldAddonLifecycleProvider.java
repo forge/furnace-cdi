@@ -71,7 +71,7 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
          ContainerServiceExtension serviceExtension = new ContainerServiceExtension(container, addon);
          ContainerBeanRegistrant registrantExtension = new ContainerBeanRegistrant();
 
-         weld = new ModularWeld(addon.getId().getName(), scanResult);
+         weld = new ModularWeld(scanResult);
          weld.addExtension(serviceExtension);
          weld.addExtension(registrantExtension);
          WeldContainer container = weld.initialize();
@@ -95,8 +95,7 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 
          ServiceRegistryProducer serviceRegistryProducer = BeanManagerUtils.getContextualInstance(manager,
                   ServiceRegistryProducer.class);
-         serviceRegistry = new WeldServiceRegistry(furnace.getLockManager(), addon, manager,
-                  serviceExtension.getServices());
+         serviceRegistry = new WeldServiceRegistry(furnace.getLockManager(), addon, manager, serviceExtension.getServices());
          serviceRegistryProducer.setServiceRegistry(serviceRegistry);
          Assert.notNull(BeanManagerUtils.getContextualInstance(manager, ServiceRegistry.class),
                   "InboundEvent registry was null.");

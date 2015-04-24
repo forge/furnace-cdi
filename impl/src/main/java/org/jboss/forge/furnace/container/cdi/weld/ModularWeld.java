@@ -6,7 +6,11 @@
  */
 package org.jboss.forge.furnace.container.cdi.weld;
 
+import org.jboss.forge.furnace.container.cdi.impl.PerformanceTunedBootstrapConfiguration;
 import org.jboss.weld.bootstrap.api.CDI11Bootstrap;
+import org.jboss.weld.bootstrap.api.SingletonProvider;
+import org.jboss.weld.bootstrap.api.helpers.TCCLSingletonProvider;
+import org.jboss.weld.bootstrap.spi.BootstrapConfiguration;
 import org.jboss.weld.bootstrap.spi.Deployment;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.resources.spi.ResourceLoader;
@@ -16,20 +20,26 @@ import org.jboss.weld.resources.spi.ResourceLoader;
  */
 public class ModularWeld extends Weld
 {
+   static
+   {
+      /*
+       * This must happen once per JVM
+       */
+      SingletonProvider.initialize(new TCCLSingletonProvider());
+   }
+
    private final ModuleScanResult scanResult;
 
-   public ModularWeld(String containerId, ModuleScanResult scanResult)
+   public ModularWeld(ModuleScanResult scanResult)
    {
-      super(containerId);
       this.scanResult = scanResult;
-      property("org.jboss.weld.bootstrap.preloaderThreadPoolSize", 0);
-      property("org.jboss.weld.bootstrap.concurrentDeployment", false);
    }
 
    @Override
    protected Deployment createDeployment(ResourceLoader loader, CDI11Bootstrap bootstrap)
    {
       Deployment deployment = super.createDeployment(scanResult.getResourceLoader(), bootstrap);
+      deployment.getServices().add(BootstrapConfiguration.class, new PerformanceTunedBootstrapConfiguration());
       return deployment;
    }
 }
