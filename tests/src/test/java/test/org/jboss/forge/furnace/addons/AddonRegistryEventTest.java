@@ -42,7 +42,7 @@ public class AddonRegistryEventTest
    @Test
    public void testFireEvent()
    {
-      addonRegistry.fireEvent("MYEVENT");
+      addonRegistry.getEventManager().fireEvent("MYEVENT");
       Assert.assertTrue("Event was not received", eventFired);
    }
 
