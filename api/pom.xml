@@ -35,5 +35,10 @@
          <groupId>org.jboss.forge.furnace</groupId>
          <artifactId>furnace-api</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.jboss.forge.furnace.test</groupId>
+         <artifactId>arquillian-furnace-classpath</artifactId>
+         <optional>true</optional>
+      </dependency>
    </dependencies>
 </project>
