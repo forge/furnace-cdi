@@ -45,12 +45,12 @@ public class AddonResourceLoader implements ResourceLoader
    {
       try
       {
-         if (classes.containsKey(name))
+         Class<?> clazz = classes.get(name);
+         if (clazz == null)
          {
-            return classes.get(name);
+            clazz = addon.getClassLoader().loadClass(name);
+            classes.put(name, clazz);
          }
-         final Class<?> clazz = addon.getClassLoader().loadClass(name);
-         classes.put(name, clazz);
          return clazz;
       }
       catch (NoClassDefFoundError e)
