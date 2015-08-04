@@ -108,6 +108,7 @@ public class AddonResourceLoader implements ResourceLoader
    @Override
    public void cleanup()
    {
+      classes.clear();
    }
 
 }
