@@ -18,13 +18,13 @@ import org.jboss.weld.resources.spi.ResourceLoader;
  */
 public class ModularWeld extends Weld
 {
-   private final ModuleScanResult scanResult;
+   private final ResourceLoader resourceLoader;
    private final ExternalConfiguration config;
 
-   public ModularWeld(String containerId, ModuleScanResult scanResult)
+   public ModularWeld(String containerId, ResourceLoader resourceLoader)
    {
       super(containerId);
-      this.scanResult = scanResult;
+      this.resourceLoader = resourceLoader;
       this.config = new ExternalConfigurationBuilder()
                .add("org.jboss.weld.bootstrap.preloaderThreadPoolSize", 0)
                .add("org.jboss.weld.bootstrap.concurrentDeployment", false).build();
@@ -33,7 +33,7 @@ public class ModularWeld extends Weld
    @Override
    protected Deployment createDeployment(ResourceLoader loader, CDI11Bootstrap bootstrap)
    {
-      Deployment deployment = super.createDeployment(scanResult.getResourceLoader(), bootstrap);
+      Deployment deployment = super.createDeployment(resourceLoader, bootstrap);
       deployment.getServices().add(ExternalConfiguration.class, config);
       return deployment;
    }

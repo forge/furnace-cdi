@@ -71,7 +71,7 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
          ContainerServiceExtension serviceExtension = new ContainerServiceExtension(container, addon);
          ContainerBeanRegistrant registrantExtension = new ContainerBeanRegistrant();
 
-         weld = new ModularWeld(addon.getId().getName(), scanResult);
+         weld = new ModularWeld(addon.getId().getName(), resourceLoader);
          weld.addExtension(serviceExtension);
          weld.addExtension(registrantExtension);
          WeldContainer container = weld.initialize();
