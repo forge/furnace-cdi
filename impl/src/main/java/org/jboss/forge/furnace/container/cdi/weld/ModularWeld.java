@@ -19,20 +19,21 @@ import org.jboss.weld.resources.spi.ResourceLoader;
 public class ModularWeld extends Weld
 {
    private final ModuleScanResult scanResult;
+   private final ExternalConfiguration config;
 
    public ModularWeld(String containerId, ModuleScanResult scanResult)
    {
       super(containerId);
       this.scanResult = scanResult;
+      this.config = new ExternalConfigurationBuilder()
+               .add("org.jboss.weld.bootstrap.preloaderThreadPoolSize", 0)
+               .add("org.jboss.weld.bootstrap.concurrentDeployment", false).build();
    }
 
    @Override
    protected Deployment createDeployment(ResourceLoader loader, CDI11Bootstrap bootstrap)
    {
       Deployment deployment = super.createDeployment(scanResult.getResourceLoader(), bootstrap);
-      ExternalConfiguration config = new ExternalConfigurationBuilder()
-               .add("org.jboss.weld.bootstrap.preloaderThreadPoolSize", 0)
-               .add("org.jboss.weld.bootstrap.concurrentDeployment", false).build();
       deployment.getServices().add(ExternalConfiguration.class, config);
       return deployment;
    }
