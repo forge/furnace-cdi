@@ -6,7 +6,6 @@
  */
 package org.jboss.forge.furnace.container.cdi.weld;
 
-import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -14,15 +13,16 @@ import java.util.List;
 import org.jboss.weld.resources.spi.ResourceLoader;
 
 /**
- * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
 public class ModuleScanResult
 {
    private final ResourceLoader loader;
-   private final List<URL> resourceUrls;
+   private final List<String> resourceUrls;
    private final Collection<String> classes;
 
-   public ModuleScanResult(ResourceLoader loader, List<URL> discoveredResourceUrls, Collection<String> discoveredClasses)
+   public ModuleScanResult(ResourceLoader loader, List<String> discoveredResourceUrls,
+            Collection<String> discoveredClasses)
    {
       this.loader = loader;
       this.resourceUrls = discoveredResourceUrls;
@@ -34,7 +34,7 @@ public class ModuleScanResult
       return classes;
    }
 
-   public List<URL> getDiscoveredResourceUrls()
+   public List<String> getDiscoveredResourceUrls()
    {
       return resourceUrls;
    }
@@ -50,10 +50,10 @@ public class ModuleScanResult
       StringBuilder result = new StringBuilder();
       if (resourceUrls != null)
       {
-         Iterator<URL> iterator = resourceUrls.iterator();
+         Iterator<String> iterator = resourceUrls.iterator();
          while (iterator.hasNext())
          {
-            String url = iterator.next().toString();
+            String url = iterator.next();
             result.append(url).append("\n");
          }
       }

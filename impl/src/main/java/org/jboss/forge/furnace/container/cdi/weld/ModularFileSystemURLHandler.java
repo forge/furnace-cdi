@@ -8,8 +8,6 @@ package org.jboss.forge.furnace.container.cdi.weld;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
@@ -39,7 +37,7 @@ public class ModularFileSystemURLHandler
       this.resourceLoader = resourceLoader;
    }
 
-   public void handle(Collection<String> paths, List<String> discoveredClasses, List<URL> discoveredBeansXmlUrls)
+   public void handle(Collection<String> paths, List<String> discoveredClasses, List<String> discoveredBeansXmlUrls)
    {
       for (String urlPath : paths)
       {
@@ -73,7 +71,7 @@ public class ModularFileSystemURLHandler
       }
    }
 
-   private void handleArchiveByFile(File file, List<String> discoveredClasses, List<URL> discoveredBeansXmlUrls)
+   private void handleArchiveByFile(File file, List<String> discoveredClasses, List<String> discoveredBeansXmlUrls)
             throws IOException
    {
       try
@@ -81,16 +79,16 @@ public class ModularFileSystemURLHandler
          log.log(Level.FINEST, "Archive: " + file);
 
          String archiveUrl = "jar:" + file.toURI().toURL().toExternalForm() + "!/";
-         ZipFile zip = new ZipFile(file);
-         Enumeration<? extends ZipEntry> entries = zip.entries();
-
-         while (entries.hasMoreElements())
+         try (ZipFile zip = new ZipFile(file))
          {
-            ZipEntry entry = entries.nextElement();
-            String name = entry.getName();
-            handle(name, new URL(archiveUrl + name), discoveredClasses, discoveredBeansXmlUrls);
+            Enumeration<? extends ZipEntry> entries = zip.entries();
+            while (entries.hasMoreElements())
+            {
+               ZipEntry entry = entries.nextElement();
+               String name = entry.getName();
+               handle(name, archiveUrl + name, discoveredClasses, discoveredBeansXmlUrls);
+            }
          }
-         zip.close();
       }
       catch (ZipException e)
       {
@@ -99,13 +97,13 @@ public class ModularFileSystemURLHandler
    }
 
    protected void handleDirectory(File file, String path, List<String> discoveredClasses,
-            List<URL> discoveredBeansXmlUrls)
+            List<String> discoveredBeansXmlUrls)
    {
       handleDirectory(file, path, new File[0], discoveredClasses, discoveredBeansXmlUrls);
    }
 
    private void handleDirectory(File file, String path, File[] excludedDirectories, List<String> discoveredClasses,
-            List<URL> discoveredBeansXmlUrls)
+            List<String> discoveredBeansXmlUrls)
    {
       for (File excludedDirectory : excludedDirectories)
       {
@@ -129,19 +127,12 @@ public class ModularFileSystemURLHandler
          }
          else
          {
-            try
-            {
-               handle(newPath, child.toURI().toURL(), discoveredClasses, discoveredBeansXmlUrls);
-            }
-            catch (MalformedURLException e)
-            {
-               log.log(Level.SEVERE, "Error loading file: " + newPath, e);
-            }
+            handle(newPath, child.getAbsolutePath(), discoveredClasses, discoveredBeansXmlUrls);
          }
       }
    }
 
-   protected void handle(String name, URL url, List<String> discoveredClasses, List<URL> discoveredBeansXmlUrls)
+   protected void handle(String name, String url, List<String> discoveredClasses, List<String> discoveredBeansXmlUrls)
    {
       if (name.endsWith(".class"))
       {
