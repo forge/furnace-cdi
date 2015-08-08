@@ -2,7 +2,7 @@
 :idprefix: id_ 
 
 This addon is a 'Furnace container' that provides *lifecycle* and *service registry* support for dependent addons. 
-Other addons may depend on this to use the http://www.cdi-spec.org/[CDI 1.1] programming model and dependency injection 
+Other addons may depend on this to use the http://www.cdi-spec.org/[CDI 1.2] programming model and dependency injection 
 framework.
 
 === Dependencies: None
