@@ -45,7 +45,7 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
    private Furnace furnace;
    private AddonRegistry addonRegistry;
 
-   private ServiceRegistry serviceRegistry;
+   private WeldServiceRegistry serviceRegistry;
    private BeanManager manager;
    private ModularWeld weld;
    private EventManagerImpl eventManager;
@@ -128,7 +128,12 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
    public void stop(Addon addon)
    {
       if (weld != null)
+      {
          weld.shutdown();
+      }
+      serviceRegistry.close();
+      serviceRegistry = null;
+      eventManager = null;
    }
 
    @Override

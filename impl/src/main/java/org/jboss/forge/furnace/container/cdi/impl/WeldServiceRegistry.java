@@ -99,11 +99,9 @@ public class WeldServiceRegistry implements ServiceRegistry
                   {
                      ExportedInstance<T> result = new ExportedInstanceImpl<>(
                               addon,
-                              manager, (Bean<T>)
-                              manager.resolve(beans),
+                              manager, (Bean<T>) manager.resolve(beans),
                               clazz,
-                              clazz
-                              );
+                              clazz);
                      instanceCache.put(clazz.getName(), result);
                      return result;
                   }
@@ -195,8 +193,7 @@ public class WeldServiceRegistry implements ServiceRegistry
                                     manager,
                                     (Bean<T>) bean,
                                     clazz,
-                                    assignableClass
-                                    ));
+                                    assignableClass));
                         }
                         return result;
                      }
@@ -255,6 +252,14 @@ public class WeldServiceRegistry implements ServiceRegistry
          }
       }
       return annotations.toArray(new Annotation[annotations.size()]);
+   }
+
+   @Override
+   public void close()
+   {
+      servicesSet.clear();
+      instanceCache.clear();
+      instancesCache.clear();
    }
 
 }
