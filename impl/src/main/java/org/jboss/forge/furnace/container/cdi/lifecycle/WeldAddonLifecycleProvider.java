@@ -113,15 +113,15 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
    @Override
    public void postStartup(Addon addon)
    {
-      if (manager != null)
-         manager.fireEvent(new PostStartup(addon), new LocalLiteral());
+      if (eventManager != null)
+         eventManager.fireEvent(new PostStartup(addon), new LocalLiteral());
    }
 
    @Override
    public void preShutdown(Addon addon)
    {
-      if (manager != null)
-         manager.fireEvent(new PreShutdown(addon), new LocalLiteral());
+      if (eventManager != null)
+         eventManager.fireEvent(new PreShutdown(addon), new LocalLiteral());
    }
 
    @Override
