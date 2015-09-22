@@ -55,12 +55,10 @@
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-jdk14</artifactId>
       </dependency>
-      <!-- 
       <dependency>
          <groupId>org.jboss</groupId>
          <artifactId>jandex</artifactId>
          <version>${version.jandex}</version>
       </dependency>
-       -->
    </dependencies>
 </project>
