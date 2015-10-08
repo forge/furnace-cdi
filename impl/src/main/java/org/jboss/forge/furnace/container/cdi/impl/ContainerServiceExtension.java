@@ -16,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.enterprise.event.Observes;
@@ -73,8 +74,12 @@ public class ContainerServiceExtension implements Extension
                || Modifier.isInterface(type.getModifiers())))
       {
          services.put(event.getAnnotatedType().getJavaClass(), event.getAnnotatedType());
-         logger.fine("Addon [" + addon + "] requires service type [" + type.getName() + "] in ClassLoader ["
+         if (logger.isLoggable(Level.FINE))
+         {
+            logger.fine("Addon [" + addon + "] requires service type ["
+                  + type.getName() + "] in ClassLoader ["
                   + type.getClassLoader() + "]");
+         }
       }
    }
 
