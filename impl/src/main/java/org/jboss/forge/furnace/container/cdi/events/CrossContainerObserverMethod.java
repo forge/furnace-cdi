@@ -24,6 +24,7 @@ import org.jboss.forge.furnace.container.cdi.util.BeanManagerUtils;
 import org.jboss.forge.furnace.event.EventManager;
 import org.jboss.forge.furnace.exception.ContainerException;
 import org.jboss.forge.furnace.util.AddonFilters;
+import org.jboss.weld.environment.se.events.ContainerShutdown;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
@@ -37,6 +38,11 @@ public class CrossContainerObserverMethod
    {
       try
       {
+         if (event instanceof ContainerShutdown)
+         {
+            // Do nothing. The container is shutting down.
+            return;
+         }
          initStack();
 
          Addon self = BeanManagerUtils.getContextualInstance(manager, AddonProducer.class).produceCurrentAddon();
