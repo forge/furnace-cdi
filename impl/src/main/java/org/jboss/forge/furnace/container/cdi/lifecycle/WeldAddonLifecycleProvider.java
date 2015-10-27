@@ -25,7 +25,6 @@ import org.jboss.forge.furnace.container.cdi.impl.WeldServiceRegistry;
 import org.jboss.forge.furnace.container.cdi.util.BeanManagerUtils;
 import org.jboss.forge.furnace.container.cdi.weld.AddonResourceLoader;
 import org.jboss.forge.furnace.container.cdi.weld.ModularURLScanner;
-import org.jboss.forge.furnace.container.cdi.weld.ModularWeld;
 import org.jboss.forge.furnace.container.cdi.weld.ModuleScanResult;
 import org.jboss.forge.furnace.event.EventManager;
 import org.jboss.forge.furnace.event.PostStartup;
@@ -34,6 +33,7 @@ import org.jboss.forge.furnace.lifecycle.AddonLifecycleProvider;
 import org.jboss.forge.furnace.lifecycle.ControlType;
 import org.jboss.forge.furnace.spi.ServiceRegistry;
 import org.jboss.forge.furnace.util.Assert;
+import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.jboss.weld.resources.spi.ResourceLoader;
 
@@ -47,9 +47,10 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 
    private WeldServiceRegistry serviceRegistry;
    private BeanManager manager;
-   private ModularWeld weld;
    private EventManagerImpl eventManager;
    private Addon container;
+
+   private WeldContainer weldContainer;
 
    @Override
    public void initialize(Furnace furnace, AddonRegistry registry, Addon container)
@@ -71,12 +72,12 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
          ContainerServiceExtension serviceExtension = new ContainerServiceExtension(container, addon);
          ContainerBeanRegistrant registrantExtension = new ContainerBeanRegistrant();
 
-         weld = new ModularWeld(addon.getId().getName(), resourceLoader);
-         weld.addExtension(serviceExtension);
-         weld.addExtension(registrantExtension);
-         WeldContainer container = weld.initialize();
+         weldContainer = new Weld(addon.getId().getName()).setResourceLoader(resourceLoader)
+                  .addExtension(serviceExtension).addExtension(registrantExtension)
+                  .property("org.jboss.weld.bootstrap.preloaderThreadPoolSize", 0)
+                  .property("org.jboss.weld.bootstrap.concurrentDeployment", false).initialize();
 
-         manager = container.getBeanManager();
+         manager = weldContainer.getBeanManager();
          Assert.notNull(manager, "BeanManager was null");
 
          AddonRepositoryProducer repositoryProducer = BeanManagerUtils.getContextualInstance(manager,
@@ -127,9 +128,9 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
    @Override
    public void stop(Addon addon)
    {
-      if (weld != null)
+      if (weldContainer != null)
       {
-         weld.shutdown();
+         weldContainer.shutdown();
       }
       serviceRegistry.close();
       serviceRegistry = null;
