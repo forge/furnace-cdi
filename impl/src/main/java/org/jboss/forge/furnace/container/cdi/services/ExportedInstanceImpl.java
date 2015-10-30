@@ -23,7 +23,7 @@ import org.jboss.forge.furnace.util.Assert;
 import org.jboss.forge.furnace.util.ClassLoaders;
 
 /**
- * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
 public class ExportedInstanceImpl<R> implements ExportedInstance<R>
 {
@@ -138,6 +138,43 @@ public class ExportedInstanceImpl<R> implements ExportedInstance<R>
          builder.append("addon.getClassLoader()=").append(addon.getClassLoader());
       builder.append("]");
       return builder.toString();
+   }
+
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((actualType == null) ? 0 : actualType.getName().hashCode());
+      result = prime * result + ((requestedType == null) ? 0 : requestedType.getName().hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      ExportedInstanceImpl<?> other = (ExportedInstanceImpl<?>) obj;
+      if (actualType == null)
+      {
+         if (other.actualType != null)
+            return false;
+      }
+      else if (!actualType.getName().equals(other.actualType.getName()))
+         return false;
+      if (requestedType == null)
+      {
+         if (other.requestedType != null)
+            return false;
+      }
+      else if (!requestedType.getName().equals(other.requestedType.getName()))
+         return false;
+      return true;
    }
 
 }
