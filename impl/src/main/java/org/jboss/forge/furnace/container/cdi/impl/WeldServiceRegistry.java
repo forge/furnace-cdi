@@ -235,7 +235,7 @@ public class WeldServiceRegistry implements ServiceRegistry
    @Override
    public String toString()
    {
-      return serviceTypes.toString();
+      return "WeldServiceRegistry [serviceTypes=" + Arrays.toString(serviceTypes) + ", addon=" + addon + "]";
    }
 
    /**
