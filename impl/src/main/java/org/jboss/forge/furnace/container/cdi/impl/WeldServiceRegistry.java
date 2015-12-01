@@ -71,7 +71,7 @@ public class WeldServiceRegistry implements ServiceRegistry
       {
          return getExportedInstance((Class<T>) Class.forName(clazz, false, addon.getClassLoader()));
       }
-      catch (ClassNotFoundException e)
+      catch (ClassNotFoundException | LinkageError e)
       {
          return null;
       }
@@ -126,7 +126,7 @@ public class WeldServiceRegistry implements ServiceRegistry
       {
          return hasService(Class.forName(clazz, false, addon.getClassLoader()));
       }
-      catch (ClassNotFoundException e)
+      catch (ClassNotFoundException | LinkageError e)
       {
          return false;
       }
@@ -154,7 +154,7 @@ public class WeldServiceRegistry implements ServiceRegistry
       {
          return getExportedInstances((Class<T>) Class.forName(clazz, false, addon.getClassLoader()));
       }
-      catch (ClassNotFoundException e)
+      catch (ClassNotFoundException | LinkageError e)
       {
          return Collections.emptySet();
       }
