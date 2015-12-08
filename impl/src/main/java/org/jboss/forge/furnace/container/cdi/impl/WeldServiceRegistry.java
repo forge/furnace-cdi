@@ -42,9 +42,6 @@ public class WeldServiceRegistry implements ServiceRegistry
 
    private final Addon addon;
 
-   @SuppressWarnings("unused")
-   private final LockManager lock;
-
    private final Set<Class<?>> servicesSet;
 
    private final Map<String, ExportedInstance<?>> instanceCache = new WeakHashMap<>();
@@ -53,7 +50,6 @@ public class WeldServiceRegistry implements ServiceRegistry
    public WeldServiceRegistry(LockManager lock, Addon addon, BeanManager manager,
             Set<Class<?>> services)
    {
-      this.lock = lock;
       this.addon = addon;
       this.manager = manager;
       // Copy set to avoid any reference pointers
