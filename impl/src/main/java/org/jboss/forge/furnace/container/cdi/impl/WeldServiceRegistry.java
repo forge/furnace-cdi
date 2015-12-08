@@ -60,7 +60,7 @@ public class WeldServiceRegistry implements ServiceRegistry
       Set<Class<?>> copy = new LinkedHashSet<>();
       copy.addAll(services);
       this.serviceTypes = new ArrayList<>(copy).toArray(new Class<?>[copy.size()]);
-      this.servicesSet = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(this.serviceTypes)));
+      this.servicesSet = new LinkedHashSet<>(Arrays.asList(this.serviceTypes));
    }
 
    @Override
@@ -216,7 +216,7 @@ public class WeldServiceRegistry implements ServiceRegistry
    @Override
    public Set<Class<?>> getExportedTypes()
    {
-      return servicesSet;
+      return Collections.unmodifiableSet(servicesSet);
    }
 
    @Override
