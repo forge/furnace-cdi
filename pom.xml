@@ -41,6 +41,9 @@
       <forge.scm.connection>scm:git:git://github.com/forge/furnace-cdi.git</forge.scm.connection>
       <forge.developer.connection>scm:git:git@github.com:forge/furnace-cdi.git</forge.developer.connection>
       <forge.scm.url>http://github.com/forge/furnace-cdi</forge.scm.url>
+      <maven.compiler.target>1.8</maven.compiler.target>
+      <maven.compiler.source>1.8</maven.compiler.source>
+      
       <!-- This version is bound to the Weld version -->
       <version.annotations>1.0.0.Alpha1</version.annotations>
       <version.cdi>1.2</version.cdi>
