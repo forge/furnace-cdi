@@ -7,7 +7,6 @@
 package org.jboss.forge.furnace.container.cdi.events;
 
 import java.lang.annotation.Annotation;
-import java.util.concurrent.Callable;
 
 import javax.enterprise.inject.spi.BeanManager;
 
@@ -36,15 +35,8 @@ public class EventManagerImpl implements EventManager
    {
       try
       {
-         ClassLoaders.executeIn(addon.getClassLoader(), new Callable<Void>()
-         {
-            @Override
-            public Void call() throws Exception
-            {
-               manager.fireEvent(new InboundEvent(event, qualifiers));
-               return null;
-            }
-         });
+         ClassLoaders.executeIn(addon.getClassLoader(),
+                  () -> manager.fireEvent(new InboundEvent(event, qualifiers)));
       }
       catch (Exception e)
       {
