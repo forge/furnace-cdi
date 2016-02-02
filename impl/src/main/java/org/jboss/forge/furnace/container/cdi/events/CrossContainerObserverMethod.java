@@ -50,6 +50,7 @@ public class CrossContainerObserverMethod
          {
             Set<Annotation> qualifiers = metadata.getQualifiers();
             if (!isLocal(qualifiers) && !onStack(event, qualifiers))
+            {
                try
                {
                   AddonRegistry addonRegistry = BeanManagerUtils.getContextualInstance(manager, AddonRegistry.class);
@@ -70,17 +71,19 @@ public class CrossContainerObserverMethod
                   throw new ContainerException("Problems encountered during propagation of event [" + event
                            + "] with qualifiers [" + qualifiers + "]", e);
                }
+            }
          }
          else if (event instanceof InboundEvent)
          {
+            InboundEvent inboundEvent = (InboundEvent) event;
             try
             {
-               push((InboundEvent) event);
-               manager.fireEvent(((InboundEvent) event).getEvent(), ((InboundEvent) event).getQualifiers());
+               push(inboundEvent);
+               manager.fireEvent(inboundEvent.getEvent(), inboundEvent.getQualifiers());
             }
             finally
             {
-               pop((InboundEvent) event);
+               pop(inboundEvent);
             }
          }
       }
@@ -95,7 +98,9 @@ public class CrossContainerObserverMethod
       for (Annotation annotation : qualifiers)
       {
          if (annotation instanceof Local)
+         {
             return true;
+         }
       }
       return false;
    }
@@ -104,22 +109,26 @@ public class CrossContainerObserverMethod
    {
       InboundEvent peek = peek();
       if (peek != null && peek.equals(new InboundEvent(event, qualifiers.toArray(new Annotation[qualifiers.size()]))))
+      {
          return true;
+      }
       return false;
    }
 
    private void cleanupStack()
    {
-      if (stack != null && stack.get() != null && stack.get().isEmpty())
+      if (stack != null && stack.get().isEmpty())
+      {
          stack.remove();
+      }
    }
 
    private void initStack()
    {
       if (stack == null)
-         stack = new ThreadLocal<>();
-      if (stack.get() == null)
-         stack.set(new ArrayDeque<InboundEvent>());
+      {
+         stack = ThreadLocal.withInitial(() -> new ArrayDeque<>());
+      }
    }
 
    private InboundEvent peek()

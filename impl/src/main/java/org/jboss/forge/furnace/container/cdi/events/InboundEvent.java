@@ -66,4 +66,10 @@ public class InboundEvent
       return true;
    }
 
+   @Override
+   public String toString()
+   {
+      return "InboundEvent [event=" + event + ", qualifiers=" + Arrays.toString(qualifiers) + "]";
+   }
+
 }

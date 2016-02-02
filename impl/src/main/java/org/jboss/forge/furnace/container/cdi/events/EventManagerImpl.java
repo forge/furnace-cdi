@@ -14,6 +14,7 @@ import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.event.EventException;
 import org.jboss.forge.furnace.event.EventManager;
 import org.jboss.forge.furnace.util.ClassLoaders;
+import org.jboss.weld.literal.AnyLiteral;
 
 /**
  * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
@@ -23,6 +24,8 @@ public class EventManagerImpl implements EventManager
 {
    private final Addon addon;
    private final BeanManager manager;
+
+   private static final Annotation[] ANY_QUALIFIER = { AnyLiteral.INSTANCE };
 
    public EventManagerImpl(Addon addon, BeanManager manager)
    {
@@ -36,7 +39,8 @@ public class EventManagerImpl implements EventManager
       try
       {
          ClassLoaders.executeIn(addon.getClassLoader(),
-                  () -> manager.fireEvent(new InboundEvent(event, qualifiers)));
+                  () -> manager.fireEvent(new InboundEvent(event,
+                           (qualifiers == null || qualifiers.length == 0) ? ANY_QUALIFIER : qualifiers)));
       }
       catch (Exception e)
       {

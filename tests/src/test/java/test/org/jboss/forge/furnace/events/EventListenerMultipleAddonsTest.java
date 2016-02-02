@@ -21,7 +21,6 @@ import org.jboss.forge.furnace.event.EventManager;
 import org.jboss.forge.furnace.repositories.AddonDependencyEntry;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -33,7 +32,6 @@ import test.org.jboss.forge.furnace.mocks.services.PublishedService;
  * @author <a href="mailto:ggastald@redhat.com">George Gastaldi</a>
  */
 @RunWith(Arquillian.class)
-@Ignore("FURNACE-107: This test reproduces the bug")
 public class EventListenerMultipleAddonsTest
 {
    @Deployment
@@ -45,7 +43,7 @@ public class EventListenerMultipleAddonsTest
                .addClass(AtomicIntegerEventListener.class);
    }
 
-   @Deployment(name = "test:dep1,3", testable = false, order = 3)
+   @Deployment(name = "test:dep1,1", testable = false, order = 3)
    public static AddonArchive getDeploymentDep3()
    {
       return ShrinkWrap.create(AddonArchive.class)
@@ -56,7 +54,7 @@ public class EventListenerMultipleAddonsTest
                         AddonDependencyEntry.create("org.jboss.forge.furnace.container:cdi"));
    }
 
-   @Deployment(name = "test:dep2,2", testable = false, order = 2)
+   @Deployment(name = "test:dep2,1", testable = false, order = 2)
    public static AddonArchive getDeploymentDep2()
    {
       return ShrinkWrap.create(AddonArchive.class)
@@ -67,7 +65,7 @@ public class EventListenerMultipleAddonsTest
                         AddonDependencyEntry.create("test:dep1"));
    }
 
-   @Deployment(name = "test:dep1,1", testable = false, order = 1)
+   @Deployment(name = "test:dep3,1", testable = false, order = 1)
    public static AddonArchive getDeploymentDep1()
    {
       return ShrinkWrap.create(AddonArchive.class)
