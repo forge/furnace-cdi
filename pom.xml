@@ -45,13 +45,13 @@
       <maven.compiler.source>1.8</maven.compiler.source>
       
       <!-- This version is bound to the Weld version -->
-      <version.annotations>1.0.0.Alpha1</version.annotations>
+      <version.annotations>1.0.0.Final</version.annotations>
       <version.cdi>1.2</version.cdi>
+      <version.jandex>2.0.3.Final</version.jandex>
       <version.furnace>${project.version}</version.furnace>
-      <version.jandex>1.2.1.Final</version.jandex>
       <version.javax.el>2.2.4</version.javax.el>
-      <version.weld>2.3.2.Final</version.weld>
-      <version.junit>4.11</version.junit>
+      <version.weld>2.4.0.Final</version.weld>
+      <version.junit>4.12</version.junit>
    </properties>
 
    <dependencyManagement>
