@@ -50,7 +50,7 @@
       <version.jandex>2.0.3.Final</version.jandex>
       <version.furnace>${project.version}</version.furnace>
       <version.javax.el>2.2.4</version.javax.el>
-      <version.weld>2.4.0.Final</version.weld>
+      <version.weld>2.4.1.Final</version.weld>
       <version.junit>4.12</version.junit>
    </properties>
 
