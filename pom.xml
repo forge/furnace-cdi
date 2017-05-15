@@ -46,11 +46,11 @@
       
       <!-- This version is bound to the Weld version -->
       <version.annotations>1.0.0.Final</version.annotations>
-      <version.cdi>1.2</version.cdi>
+      <version.cdi>2.0</version.cdi>
       <version.jandex>2.0.3.Final</version.jandex>
       <version.furnace>${project.version}</version.furnace>
       <version.javax.el>2.2.4</version.javax.el>
-      <version.weld>2.4.2.SP1</version.weld>
+      <version.weld>3.0.0.Final</version.weld>
       <version.junit>4.12</version.junit>
    </properties>
 
