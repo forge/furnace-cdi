@@ -16,20 +16,25 @@ import org.jboss.forge.furnace.container.cdi.events.EventManagerProducer;
 import org.jboss.weld.environment.se.WeldContainer;
 
 /**
- * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a> 
+ * @author <a href="mailto:lincolnbaxter@gmail.com">Lincoln Baxter, III</a>
  */
 public class ContainerBeanRegistrant implements Extension
 {
    public void registerWeldSEBeans(@Observes BeforeBeanDiscovery event, BeanManager manager)
    {
-      event.addAnnotatedType(manager.createAnnotatedType(AddonProducer.class));
-      event.addAnnotatedType(manager.createAnnotatedType(AddonRegistryProducer.class));
-      event.addAnnotatedType(manager.createAnnotatedType(AddonRepositoryProducer.class));
-      event.addAnnotatedType(manager.createAnnotatedType(CrossContainerObserverMethod.class));
-      event.addAnnotatedType(manager.createAnnotatedType(EventManagerProducer.class));
-      event.addAnnotatedType(manager.createAnnotatedType(FurnaceProducer.class));
-      event.addAnnotatedType(manager.createAnnotatedType(ImportedProducer.class));
-      event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryProducer.class));
-      event.addAnnotatedType(manager.createAnnotatedType(WeldContainer.class));
+      event.addAnnotatedType(manager.createAnnotatedType(AddonProducer.class), AddonProducer.class.getName());
+      event.addAnnotatedType(manager.createAnnotatedType(AddonRegistryProducer.class),
+               AddonRegistryProducer.class.getName());
+      event.addAnnotatedType(manager.createAnnotatedType(AddonRepositoryProducer.class),
+               AddonRepositoryProducer.class.getName());
+      event.addAnnotatedType(manager.createAnnotatedType(CrossContainerObserverMethod.class),
+               CrossContainerObserverMethod.class.getName());
+      event.addAnnotatedType(manager.createAnnotatedType(EventManagerProducer.class),
+               EventManagerProducer.class.getName());
+      event.addAnnotatedType(manager.createAnnotatedType(FurnaceProducer.class), FurnaceProducer.class.getName());
+      event.addAnnotatedType(manager.createAnnotatedType(ImportedProducer.class), ImportedProducer.class.getName());
+      event.addAnnotatedType(manager.createAnnotatedType(ServiceRegistryProducer.class),
+               ServiceRegistryProducer.class.getName());
+      event.addAnnotatedType(manager.createAnnotatedType(WeldContainer.class), WeldContainer.class.getName());
    }
 }
