@@ -33,6 +33,7 @@ import org.jboss.forge.furnace.lifecycle.AddonLifecycleProvider;
 import org.jboss.forge.furnace.lifecycle.ControlType;
 import org.jboss.forge.furnace.spi.ServiceRegistry;
 import org.jboss.forge.furnace.util.Assert;
+import org.jboss.weld.config.ConfigurationKey;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.jboss.weld.resources.spi.ResourceLoader;
@@ -74,8 +75,9 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
 
          weldContainer = new Weld(addon.getId().getName()).setResourceLoader(resourceLoader)
                   .addExtension(serviceExtension).addExtension(registrantExtension)
-                  .property("org.jboss.weld.bootstrap.preloaderThreadPoolSize", 0)
-                  .property("org.jboss.weld.bootstrap.concurrentDeployment", false).initialize();
+                  .property(ConfigurationKey.PRELOADER_THREAD_POOL_SIZE.get(), 0)
+                  .property(ConfigurationKey.CONCURRENT_DEPLOYMENT.get(), false)
+                  .initialize();
 
          manager = weldContainer.getBeanManager();
          Assert.notNull(manager, "BeanManager was null");
