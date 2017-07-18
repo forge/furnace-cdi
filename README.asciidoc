@@ -5,7 +5,7 @@ image:https://forge.ci.cloudbees.com/job/furnace-cdi/badge/icon["Build Status", 
 image:http://img.shields.io/:license-EPL-blue.svg["License", link="https://www.eclipse.org/legal/epl-v10.html"]
 
 This addon is a 'Furnace container' that provides *lifecycle* and *service registry* support for dependent addons. 
-Other addons may depend on this to use the http://www.cdi-spec.org/[CDI 1.2] programming model and dependency injection 
+Other addons may depend on this to use the http://www.cdi-spec.org/[CDI 2.0] programming model and dependency injection 
 framework.
 
 === Dependencies: None
