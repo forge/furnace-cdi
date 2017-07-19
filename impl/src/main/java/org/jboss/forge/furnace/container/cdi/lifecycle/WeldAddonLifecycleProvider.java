@@ -68,7 +68,7 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
       ModularURLScanner scanner = new ModularURLScanner(resourceLoader, "META-INF/beans.xml");
       ModuleScanResult scanResult = scanner.scan();
 
-      if (!scanResult.getDiscoveredResourceUrls().isEmpty())
+      if (scanResult.getDiscoveredResourceUrls().size() > 0)
       {
          ContainerServiceExtension serviceExtension = new ContainerServiceExtension(container, addon);
          ContainerBeanRegistrant registrantExtension = new ContainerBeanRegistrant();
