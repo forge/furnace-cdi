@@ -12,6 +12,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Qualifier;
 
 import org.jboss.forge.furnace.addons.Addon;
@@ -31,5 +32,14 @@ import org.jboss.forge.furnace.event.PreShutdown;
 @Target(value = { ElementType.PARAMETER })
 public @interface Local
 {
+   /**
+    * Supports inline instantiation of the {@link Local} qualifier.
+    */
+   public static final class Literal extends AnnotationLiteral<Local> implements Local
+   {
+      public static final Literal INSTANCE = new Literal();
 
+      private static final long serialVersionUID = 1L;
+
+   }
 }

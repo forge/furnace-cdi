@@ -13,7 +13,7 @@ import org.jboss.forge.furnace.addons.Addon;
 import org.jboss.forge.furnace.addons.AddonRegistry;
 import org.jboss.forge.furnace.container.cdi.events.EventManagerImpl;
 import org.jboss.forge.furnace.container.cdi.events.EventManagerProducer;
-import org.jboss.forge.furnace.container.cdi.events.LocalLiteral;
+import org.jboss.forge.furnace.container.cdi.events.Local;
 import org.jboss.forge.furnace.container.cdi.impl.AddonProducer;
 import org.jboss.forge.furnace.container.cdi.impl.AddonRegistryProducer;
 import org.jboss.forge.furnace.container.cdi.impl.AddonRepositoryProducer;
@@ -117,14 +117,14 @@ public class WeldAddonLifecycleProvider implements AddonLifecycleProvider
    public void postStartup(Addon addon)
    {
       if (eventManager != null)
-         eventManager.fireEvent(new PostStartup(addon), new LocalLiteral());
+         eventManager.fireEvent(new PostStartup(addon), Local.Literal.INSTANCE);
    }
 
    @Override
    public void preShutdown(Addon addon)
    {
       if (eventManager != null)
-         eventManager.fireEvent(new PreShutdown(addon), new LocalLiteral());
+         eventManager.fireEvent(new PreShutdown(addon), Local.Literal.INSTANCE);
    }
 
    @Override
