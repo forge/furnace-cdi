@@ -1,7 +1,7 @@
 == Furnace Container: CDI
 :idprefix: id_ 
 
-image:https://forge.ci.cloudbees.com/job/furnace-cdi/badge/icon["Build Status", link="https://forge.ci.cloudbees.com/job/furnace-cdi/"]
+image:https://travis-ci.org/forge/furnace-cdi.svg?branch=master["Build Status", link="https://travis-ci.org/forge/furnace-cdi"]
 image:http://img.shields.io/:license-EPL-blue.svg["License", link="https://www.eclipse.org/legal/epl-v10.html"]
 
 This addon is a 'Furnace container' that provides *lifecycle* and *service registry* support for dependent addons. 
